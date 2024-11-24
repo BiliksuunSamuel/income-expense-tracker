@@ -1,0 +1,152 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ie_montrac/bottom-sheet/transactions.filter.bottom.sheet.dart';
+import 'package:ie_montrac/models/Transaction.dart';
+import 'package:ie_montrac/screens/home/financial.report.screen.dart';
+import 'package:ie_montrac/sections/grouped.transactions.section.dart';
+import 'package:ie_montrac/theme/app.colors.dart';
+import 'package:ie_montrac/theme/app.font.size.dart';
+import 'package:ie_montrac/utils/dimensions.dart';
+import 'package:ie_montrac/views/app.view.dart';
+import 'package:ie_montrac/views/content.container.dart';
+
+class TransactionsScreen extends StatefulWidget {
+  const TransactionsScreen({super.key});
+
+  @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return AppView(
+      body: SafeArea(
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            Container(
+              height: Dimensions.getHeight(60),
+              padding: EdgeInsets.all(Dimensions.getPadding(10)),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: Dimensions.getPadding(10)),
+                        height: Dimensions.getHeight(40),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                              Dimensions.getBorderRadius(20)),
+                          border: Border.all(
+                            width: Dimensions.getWidth(0.25),
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.primaryColor,
+                              size: Dimensions.getIconSize(28),
+                            ),
+                            SizedBox(width: Dimensions.getWidth(2.5)),
+                            Text(
+                              "Month",
+                              style: AppFontSize.fontSizeMedium(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext ctx) {
+                              return TransactionsFilterBottomSheet();
+                            });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: Dimensions.getPadding(10)),
+                        height: Dimensions.getHeight(40),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                              Dimensions.getBorderRadius(8)),
+                          border: Border.all(
+                            width: Dimensions.getWidth(0.25),
+                            color: Colors.grey,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.filter_list_outlined,
+                          size: Dimensions.getIconSize(32),
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(Dimensions.getPadding(15)),
+              child: InkWell(
+                onTap: () {
+                  Get.to(() => const FinancialReportScreen());
+                },
+                splashColor: Colors.transparent,
+                child: Container(
+                  padding: EdgeInsets.all(Dimensions.getPadding(10)),
+                  height: Dimensions.getHeight(50),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(Dimensions.getBorderRadius(10)),
+                    color: AppColors.primaryColor.withOpacity(0.15),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "See your financial report",
+                        style: AppFontSize.fontSizeMedium(
+                            color: AppColors.primaryColor),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColors.primaryColor,
+                        size: Dimensions.getIconSize(24),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            ContentContainer(
+              padding: Dimensions.getPadding(15),
+              child: Column(
+                children: [
+                  GroupedTransactionsSection(
+                    title: "Today",
+                    transactions: Transaction.getTodaysTransactions(),
+                  ),
+                  SizedBox(height: Dimensions.getHeight(20)),
+                  GroupedTransactionsSection(
+                      title: "Yesterday",
+                      transactions: Transaction.getPastTransactions()),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

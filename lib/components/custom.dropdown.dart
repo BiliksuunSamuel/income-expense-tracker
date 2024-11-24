@@ -10,15 +10,17 @@ class CustomDropdown<T> extends StatelessWidget {
   final String label; // Label text for the dropdown
   final ValueChanged<T?>? onChanged; // Callback when an item is selected
   final String Function(T) itemLabel; // Function to extract label from item
+  final String? hintText;
 
-  const CustomDropdown({
-    Key? key,
-    required this.items,
-    required this.selectedValue,
-    required this.label,
-    required this.onChanged,
-    required this.itemLabel,
-  }) : super(key: key);
+  const CustomDropdown(
+      {Key? key,
+      required this.items,
+      required this.selectedValue,
+      required this.label,
+      required this.onChanged,
+      required this.itemLabel,
+      this.hintText})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class CustomDropdown<T> extends StatelessWidget {
         child: DropdownButtonFormField<T>(
           isExpanded: true,
           hint: Text(
-            label,
+            hintText ?? "",
             style: AppFontSize.fontSizeMedium(
               color: Colors.black.withOpacity(0.5),
               fontFamily: "Nunito Sans",

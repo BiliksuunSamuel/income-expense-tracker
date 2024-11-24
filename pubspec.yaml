@@ -36,6 +36,8 @@ dependencies:
   pinput: ^5.0.0
   fl_chart:
   flutter_svg:
+  intl: ^0.19.0
+  number_text_input_formatter:
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +85,17 @@ flutter:
    - assets/images/success.svg
    - assets/images/car.svg
    - assets/images/attachment.svg
+   - assets/images/salary.svg
+   - assets/images/lineChart.svg
+   - assets/images/invoice.png
+   - assets/images/trash.svg
+   - assets/images/warning.svg
+   - assets/images/pen.svg
+   - assets/images/profile.png
+   - assets/images/wallet.svg
+   - assets/images/settings.svg
+   - assets/images/upload.svg
+   - assets/images/logout.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

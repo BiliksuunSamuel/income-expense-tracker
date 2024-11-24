@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ie_montrac/bottom-sheet/file.picker.bottom.sheet.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/custom.dropdown.dart';
 import 'package:ie_montrac/components/custom.input.dart';
@@ -10,24 +9,25 @@ import 'package:ie_montrac/helper/resources.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/views/app.view.dart';
 
+import '../../bottom-sheet/file.picker.bottom.sheet.dart';
 import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
 
-class AddExpenseScreen extends StatefulWidget {
-  const AddExpenseScreen({super.key});
+class AddIncomeScreen extends StatefulWidget {
+  const AddIncomeScreen({super.key});
 
   @override
-  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+  State<AddIncomeScreen> createState() => _AddIncomeScreenState();
 }
 
-class _AddExpenseScreenState extends State<AddExpenseScreen> {
+class _AddIncomeScreenState extends State<AddIncomeScreen> {
   bool isRepeatEnabled = false;
   double amount = 0;
 
   @override
   Widget build(BuildContext context) {
     return AppView(
-      backgroundColor: AppColors.redColor,
+      backgroundColor: AppColors.greenColor,
       body: Stack(
         children: [
           CustomScrollView(
@@ -35,9 +35,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               const SliverAppBar(
                 pinned: true,
                 automaticallyImplyLeading: false,
-                backgroundColor: AppColors.redColor,
+                backgroundColor: AppColors.greenColor,
                 title: AppHeaderTitle(
-                  title: "Expense",
+                  title: "Income",
                   titleColor: Colors.white,
                   iconColor: Colors.white,
                 ),
@@ -47,7 +47,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   child: Column(
                     children: [
                       Container(
-                        color: AppColors.redColor,
+                        color: AppColors.greenColor,
                         width: const BoxConstraints.expand().maxWidth,
                         height: Dimensions.getHeight(180),
                         padding: EdgeInsets.all(Dimensions.getPadding(20)),
@@ -209,7 +209,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ],
                   ),
                 ),
-              ),
+              )
             ],
           )
         ],

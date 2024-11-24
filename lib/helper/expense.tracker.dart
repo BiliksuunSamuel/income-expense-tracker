@@ -20,36 +20,42 @@ class ExpenseTrackerHelper {
   }
 
   static Widget buildNavItem(int index, String iconPath, String label,
-      int selectedIndex, Color iconColor) {
+      int selectedIndex, Color iconColor,
+      {Function()? onPressed}) {
     final isSelected = selectedIndex == index;
     return InkWell(
+      onTap: onPressed,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SvgIcon(
             path: iconPath,
-            color: iconColor,
+            color:
+                selectedIndex == index ? AppColors.primaryColor : Colors.grey,
             width: Dimensions.getWidth(18),
             height: Dimensions.getWidth(18),
           ),
           Text(
             label,
-            style: TextStyle(
-              color: isSelected ? Colors.purple : Colors.grey,
-              fontSize: 12,
-            ),
+            style: AppFontSize.fontSizeSmall(
+                color: isSelected ? AppColors.primaryColor : Colors.grey,
+                fontSize: 12,
+                fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
-  static Widget buildTimeButton(String text, String selectedTimePeriod) {
+  static Widget buildTimeButton(String text, String selectedTimePeriod,
+      {Function()? onPress}) {
     bool isSelected = text == selectedTimePeriod;
     return Container(
       width: 80,
       margin: const EdgeInsets.symmetric(horizontal: 4),
       child: InkWell(
+        onTap: onPress,
+        splashColor: Colors.transparent,
         child: Container(
           decoration: BoxDecoration(
             color: isSelected ? Colors.amber[100] : Colors.grey[200],
@@ -77,34 +83,58 @@ class ExpenseTrackerHelper {
       required String subtitle,
       required String amount,
       required String time,
-      Color? iconColor}) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12),
+      Color? iconColor,
+      Function()? onPress}) {
+    return InkWell(
+      onTap: onPress,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: SvgIcon(
+              path: icon,
+              color: iconColor,
+            ),
           ),
-          child: SvgIcon(
-            path: icon,
-            color: iconColor,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppFontSize.fontSizeMedium(
+                    fontWeight: FontWeight.bold,
+                    fontSize: Dimensions.getFontSize(16),
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: AppFontSize.fontSizeMedium(
+                    color: Colors.grey[600],
+                    fontSize: Dimensions.getFontSize(14),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                title,
+                amount,
                 style: AppFontSize.fontSizeMedium(
                   fontWeight: FontWeight.bold,
                   fontSize: Dimensions.getFontSize(16),
+                  color: AppColors.redColor,
                 ),
               ),
               Text(
-                subtitle,
+                time,
                 style: AppFontSize.fontSizeMedium(
                   color: Colors.grey[600],
                   fontSize: Dimensions.getFontSize(14),
@@ -112,28 +142,8 @@ class ExpenseTrackerHelper {
               ),
             ],
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              amount,
-              style: AppFontSize.fontSizeMedium(
-                fontWeight: FontWeight.bold,
-                fontSize: Dimensions.getFontSize(16),
-                color: AppColors.redColor,
-              ),
-            ),
-            Text(
-              time,
-              style: AppFontSize.fontSizeMedium(
-                color: Colors.grey[600],
-                fontSize: Dimensions.getFontSize(14),
-              ),
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

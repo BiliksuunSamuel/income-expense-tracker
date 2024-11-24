@@ -20,4 +20,15 @@ class Resources {
   static const String success = "assets/images/success.svg";
   static const String car = "assets/images/car.svg";
   static const String attachment = "assets/images/attachment.svg";
+  static const String salary = "assets/images/salary.svg";
+  static const String lineChart = "assets/images/lineChart.svg";
+  static const String invoicePlaceholder = "assets/images/invoice.png";
+  static const String trashIcon = "assets/images/trash.svg";
+  static const String warning = "assets/images/warning.svg";
+  static const String pen = "assets/images/pen.svg";
+  static const String profileAvatar = "assets/images/profile.png";
+  static const String wallet = "assets/images/wallet.svg";
+  static const String settings = "assets/images/settings.svg";
+  static const String upload = "assets/images/upload.svg";
+  static const String logout = "assets/images/logout.svg";
 }

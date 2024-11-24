@@ -10,13 +10,15 @@ class AppHeaderTitle extends StatelessWidget {
   final Widget? rightComponent;
   final Color? titleColor;
   final Color? iconColor;
+  final Widget? leftComponent;
   const AppHeaderTitle(
       {super.key,
       this.handleBackButtonPressed,
       this.title,
       this.rightComponent,
       this.iconColor,
-      this.titleColor});
+      this.titleColor,
+      this.leftComponent});
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +27,21 @@ class AppHeaderTitle extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          IconButton(
-              onPressed: handleBackButtonPressed ??
-                  () {
-                    Get.back();
-                  },
-              icon: Icon(
-                Icons.arrow_back_outlined,
-                color: iconColor ?? Colors.black,
-              )),
+          Visibility(
+              visible: leftComponent != null,
+              child: leftComponent ?? SizedBox()),
+          Visibility(
+            visible: leftComponent == null,
+            child: IconButton(
+                onPressed: handleBackButtonPressed ??
+                    () {
+                      Get.back();
+                    },
+                icon: Icon(
+                  Icons.arrow_back_outlined,
+                  color: iconColor ?? Colors.black,
+                )),
+          ),
           SizedBox(width: Dimensions.getWidth(10)),
           Expanded(
             child: Text(title ?? "Title Here",

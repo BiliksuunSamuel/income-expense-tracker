@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
 
 import '../helper/expense.tracker.dart';
 import '../theme/app.colors.dart';
@@ -64,6 +66,7 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
               iconColor: AppColors.orangeColor),
           const SizedBox(height: 16),
           ExpenseTrackerHelper.buildTransactionItem(
+              onPress: () => {Get.to(() => const TransactionDetailsScreen())},
               icon: "assets/images/subscription.svg",
               color: AppColors.primaryColor.withOpacity(0.15),
               title: 'Subscription',

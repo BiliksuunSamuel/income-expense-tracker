@@ -1,0 +1,1 @@
+enum DialogVariant { Success, Error }
