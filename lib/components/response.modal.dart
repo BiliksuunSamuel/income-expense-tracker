@@ -10,7 +10,7 @@ class ResponseModal extends StatelessWidget {
   final DialogVariant? variant;
   final String? message;
   const ResponseModal(
-      {super.key, this.variant = DialogVariant.Success, this.message});
+      {super.key, this.variant = DialogVariant.Error, this.message});
 
   @override
   Widget build(BuildContext context) {

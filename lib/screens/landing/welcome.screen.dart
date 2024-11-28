@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/screens/auth/auth.screen.dart';
+import 'package:ie_montrac/screens/home/home.screen.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
@@ -25,7 +27,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   //
   void _handleChecks() async {
-    await Future.delayed(const Duration(seconds: 3), () {
+    await Future.delayed(const Duration(seconds: 2), () async {
+      var repository = Get.find<Repository>();
+      var authUser = await repository.getAuthUser();
+      if (authUser != null) {
+        return Get.to(() => const HomeScreen());
+      }
       Get.to(() => const AuthScreen());
     });
   }

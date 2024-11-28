@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/routes/app.routes.dart';
@@ -5,7 +6,18 @@ import 'package:ie_montrac/screens/landing/welcome.screen.dart';
 import 'package:ie_montrac/theme/app.theme.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 
-void main() {
+import "api/dependencies.dart" as dependencies;
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler() async {
+  await Firebase.initializeApp();
+}
+
+void main() async {
+  //
+  WidgetsFlutterBinding.ensureInitialized();
+  await firebaseMessagingBackgroundHandler();
+  await dependencies.init();
   runApp(const MyApp());
 }
 

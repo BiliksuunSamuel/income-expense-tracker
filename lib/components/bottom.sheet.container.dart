@@ -27,7 +27,7 @@ class BottomSheetContainer extends StatelessWidget {
         child: SingleChildScrollView(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
               Center(
                 child: Container(

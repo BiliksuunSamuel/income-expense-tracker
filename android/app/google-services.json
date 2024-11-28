@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "123240012898",
+    "project_id": "income-expense-tracker-61fc8",
+    "storage_bucket": "income-expense-tracker-61fc8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123240012898:android:ff51254a13ca645ae8053b",
+        "android_client_info": {
+          "package_name": "com.example.ie_montrac"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZn7oIuAgGg0Ynz4eH43O5d06DooGqJcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
