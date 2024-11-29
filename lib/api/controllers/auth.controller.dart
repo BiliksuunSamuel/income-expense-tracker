@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ie_montrac/components/response.modal.dart';
@@ -6,6 +6,8 @@ import 'package:ie_montrac/constants/keys.dart';
 import 'package:ie_montrac/dtos/email.signin.request.dart';
 import 'package:ie_montrac/dtos/email.signup.request.dart';
 import 'package:ie_montrac/dtos/http.request.dto.dart';
+import 'package:ie_montrac/screens/auth/otp.verify.screen.dart';
+import 'package:ie_montrac/screens/auth/reset.password.screen.dart';
 import 'package:ie_montrac/screens/home/home.screen.dart';
 import 'package:ie_montrac/screens/landing/welcome.screen.dart';
 
@@ -24,6 +26,149 @@ class AuthController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  var otpValidity = 0.obs;
+
+  void setOtpValidity(int value) {
+    otpValidity.value = value;
+  }
+
+//handle reset password
+  Future<void> resetPassword() async {
+    try {
+      loading = true;
+      update();
+      var request = HttpRequestDto("/api/authentication/reset-password",
+          data: {
+            "password": passwordController.text,
+            "confirmPassword": confirmPasswordController.text,
+          },
+          token: authResponse?.token);
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      loading = false;
+      passwordController.clear();
+      confirmPasswordController.clear();
+      var authInfo = AuthResponse.fromJson(res.data);
+      await repository.saveAuthUser(authInfo);
+      update();
+      Get.to(() => const HomeScreen());
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry, an error occurred",
+      ));
+    }
+  }
+
+  //handle forgot password
+  Future<void> forgotPassword() async {
+    try {
+      loading = true;
+      update();
+      var request = HttpRequestDto("/api/authentication/forgot-password",
+          data: {"email": emailController.text});
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      var authInfo = AuthResponse.fromJson(res.data);
+      authResponse = authInfo;
+      await repository.saveAuthUser(authInfo);
+      loading = false;
+      emailController.clear();
+      update();
+      Get.to(() => const OtpVerifyScreen());
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
+  //handle verify otp
+  Future<void> confirmVerificationCode() async {
+    try {
+      loading = true;
+      update();
+      var request = HttpRequestDto("/api/authentication/otp-verify",
+          token: authResponse?.token,
+          data: {
+            "code": otpController.text,
+          });
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      loading = false;
+      var authInfo = AuthResponse.fromJson(res.data);
+      authResponse = authInfo;
+      await repository.saveAuthUser(authInfo);
+      otpController.clear();
+      update();
+      if (authInfo.user!.resetPassword) {
+        return Get.to(() => const ResetPasswordScreen());
+      }
+      Get.to(() => const HomeScreen());
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
+  //handle resend verification code
+  Future<void> resendVerificationCode() async {
+    try {
+      loading = true;
+      update();
+      var request = HttpRequestDto("/api/authentication/otp-resend",
+          token: authResponse?.token);
+      var res = await repository.postAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      var resData = AuthResponse.fromJson(res.data);
+      authResponse = resData;
+      await repository.saveAuthUser(resData);
+      final expiryTime = resData.user!.otpExpiryTime!;
+      final currentTime = DateTime.now();
+      final difference = expiryTime.difference(currentTime).inSeconds;
+      otpValidity.value = difference > 0 ? difference : 0;
+      loading = false;
+      update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //change password visibility
   void setPasswordVisibility(bool newValue) {
@@ -35,6 +180,7 @@ class AuthController extends GetxController {
   Future<void> signInWithEmail() async {
     try {
       loading = true;
+      update();
       var data = EmailSignInRequest(
               email: emailController.text, password: passwordController.text)
           .toJson();
@@ -50,7 +196,18 @@ class AuthController extends GetxController {
       authResponse = AuthResponse.fromJson(res.data);
       await repository.saveAuthUser(authResponse!);
       loading = false;
+      emailController.clear();
+      passwordController.clear();
+      showPassword = false;
+      if (authResponse!.user!.authenticated) {
+        return Get.to(() => const HomeScreen());
+      }
+      final expiryTime = authResponse!.user!.otpExpiryTime!;
+      final currentTime = DateTime.now();
+      final difference = expiryTime.difference(currentTime).inSeconds;
+      otpValidity.value = difference > 0 ? difference : 0;
       update();
+      Get.to(() => const OtpVerifyScreen());
     } catch (_) {
       loading = false;
       update();
@@ -73,7 +230,7 @@ class AuthController extends GetxController {
           .toJson();
       var request = HttpRequestDto("/api/authentication/register", data: data);
       var res = await repository.postAsync(request);
-      if (res.code != 200) {
+      if (res.code != 200 && res.code != 201) {
         loading = false;
         update();
         return Get.dialog(ResponseModal(
@@ -83,7 +240,17 @@ class AuthController extends GetxController {
       authResponse = AuthResponse.fromJson(res.data);
       await repository.saveAuthUser(authResponse!);
       loading = false;
+      emailController.clear();
+      firstNameController.clear();
+      lastNameController.clear();
+      passwordController.clear();
+      showPassword = false;
       update();
+      update();
+      if (authResponse!.user!.authenticated) {
+        return Get.to(() => const HomeScreen());
+      }
+      Get.to(() => const OtpVerifyScreen());
     } catch (_) {
       loading = false;
       update();

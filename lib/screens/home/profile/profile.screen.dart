@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           height: Dimensions.getHeight(2.5),
                                         ),
                                         Text(
-                                          "Iriana Saliha",
+                                          "${authController.authResponse?.user?.firstName} ${authController.authResponse?.user?.lastName}",
                                           style: AppFontSize.fontSizeTitle(),
                                         )
                                       ],

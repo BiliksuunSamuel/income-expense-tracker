@@ -4,6 +4,7 @@ import 'package:ie_montrac/api/controllers/auth.controller.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/components/link.button.dart';
 import 'package:ie_montrac/components/loader.dart';
+import 'package:ie_montrac/screens/auth/forgot.password.screen.dart';
 import 'package:ie_montrac/screens/auth/register.screen.dart';
 
 import '../../components/app.header.title.dart';
@@ -87,10 +88,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               SizedBox(
                                 height: Dimensions.getHeight(20),
                               ),
-                              const Center(
+                              Center(
                                 child: LinkButton(
                                   title: "Forgot Password",
                                   decoration: TextDecoration.none,
+                                  onPress: () {
+                                    Get.to(() => const ForgotPasswordScreen());
+                                  },
                                 ),
                               ),
                               SizedBox(

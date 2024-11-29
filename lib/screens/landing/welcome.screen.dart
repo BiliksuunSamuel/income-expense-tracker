@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/screens/auth/auth.screen.dart';
+import 'package:ie_montrac/screens/auth/otp.verify.screen.dart';
 import 'package:ie_montrac/screens/home/home.screen.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
@@ -31,7 +32,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       var repository = Get.find<Repository>();
       var authUser = await repository.getAuthUser();
       if (authUser != null) {
-        return Get.to(() => const HomeScreen());
+        if (authUser.user!.authenticated) {
+          return Get.to(() => const HomeScreen());
+        }
+        Get.to(() => const OtpVerifyScreen());
       }
       Get.to(() => const AuthScreen());
     });
