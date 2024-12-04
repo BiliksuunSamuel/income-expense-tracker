@@ -14,8 +14,8 @@ class SvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       path,
-      width: width ?? Dimensions.getIconSize(24),
-      height: height ?? Dimensions.getIconSize(24),
+      width: width ?? Dimensions.getIconSize(22),
+      height: height ?? Dimensions.getIconSize(22),
       colorFilter: ColorFilter.mode(color ?? Colors.white,
           BlendMode.srcIn), // Optional, if you want to colorize the icon
     );

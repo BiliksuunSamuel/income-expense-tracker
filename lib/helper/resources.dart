@@ -31,4 +31,6 @@ class Resources {
   static const String settings = "assets/images/settings.svg";
   static const String upload = "assets/images/upload.svg";
   static const String logout = "assets/images/logout.svg";
+  static const String handShake = "assets/images/handshake.svg";
+  static const String uncategorized = "assets/images/uncategorized.svg";
 }

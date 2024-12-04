@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/custom.dropdown.dart';
+import 'package:ie_montrac/components/custom.number.input.dart';
 import 'package:ie_montrac/components/primary.button.dart';
 import 'package:ie_montrac/components/progress.bar.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/app.view.dart';
-import 'package:number_text_input_formatter/number_text_input_formatter.dart';
 
 class BudgetCreateScreen extends StatefulWidget {
   const BudgetCreateScreen({super.key});
@@ -62,45 +62,7 @@ class _BudgetCreateScreenState extends State<BudgetCreateScreen> {
                               SizedBox(
                                 height: Dimensions.getHeight(10),
                               ),
-                              TextField(
-                                cursorColor: Colors.white,
-                                cursorHeight: Dimensions.getHeight(25),
-                                decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.zero,
-                                    prefix: Text(
-                                      "\$",
-                                      style: AppFontSize.fontSizeTitle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: Dimensions.getFontSize(52),
-                                          color: Colors.white),
-                                    ),
-                                    hintText: "0",
-                                    hintStyle: AppFontSize.fontSizeTitle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: Dimensions.getFontSize(52),
-                                        color: Colors.white),
-                                    border: const OutlineInputBorder(
-                                        borderSide: BorderSide.none)),
-                                style: AppFontSize.fontSizeTitle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: Dimensions.getFontSize(52),
-                                    color: Colors.white),
-                                inputFormatters: [
-                                  NumberTextInputFormatter(
-                                    integerDigits: 10,
-                                    decimalDigits: 2,
-                                    maxValue: '1000000000.00',
-                                    decimalSeparator: '.',
-                                    groupDigits: 3,
-                                    groupSeparator: ',',
-                                    allowNegative: false,
-                                    overrideDecimalPoint: true,
-                                    insertDecimalPoint: false,
-                                    insertDecimalDigits: true,
-                                  ),
-                                ],
-                                keyboardType: TextInputType.number,
-                              )
+                              const CustomNumberInput()
                             ],
                           ),
                         )),

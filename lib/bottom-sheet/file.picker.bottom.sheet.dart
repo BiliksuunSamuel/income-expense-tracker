@@ -6,7 +6,12 @@ import '../helper/resources.dart';
 import '../utils/dimensions.dart';
 
 class FilePickerBottomSheet extends StatelessWidget {
-  const FilePickerBottomSheet({super.key});
+  final Function()? onCamera;
+  final Function()? onImage;
+  final Function()? onDocument;
+
+  const FilePickerBottomSheet(
+      {super.key, this.onCamera, this.onDocument, this.onImage});
 
   @override
   Widget build(BuildContext context) {
@@ -14,28 +19,31 @@ class FilePickerBottomSheet extends StatelessWidget {
       SizedBox(
         height: Dimensions.getHeight(20),
       ),
-      const Row(
+      Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
                 child: CustomFilePickerButton(
+              onPress: onCamera,
               title: "Camera",
               iconPath: Resources.camera,
             )),
             Expanded(
                 child: CustomFilePickerButton(
+              onPress: onImage,
               title: "Image",
               iconPath: Resources.gallery,
             )),
             Expanded(
                 child: CustomFilePickerButton(
+              onPress: onDocument,
               title: "Document",
               iconPath: Resources.file,
             )),
           ]),
       SizedBox(
-        height: Dimensions.getHeight(30),
+        height: Dimensions.getHeight(20),
       )
     ]);
   }

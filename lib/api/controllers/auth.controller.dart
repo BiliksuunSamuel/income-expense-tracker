@@ -301,7 +301,7 @@ class AuthController extends GetxController {
       var httpRequest = HttpRequestDto("/api/authentication/google-auth",
           data: {"accessToken": googleAuth.accessToken});
       var response = await repository.postAsync(httpRequest);
-      if (response.code != 200) {
+      if (!response.isSuccessful) {
         loading = false;
         return Get.dialog(ResponseModal(message: response.message));
       }

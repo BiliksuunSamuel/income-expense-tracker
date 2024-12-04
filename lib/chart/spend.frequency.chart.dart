@@ -1,11 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:ie_montrac/models/transaction.chart.data.dart';
 
 import '../theme/app.colors.dart';
 import '../utils/dimensions.dart';
 
 class SpendFrequencyChart extends StatelessWidget {
-  const SpendFrequencyChart({super.key});
+  final List<TransactionChartData> chartData;
+  const SpendFrequencyChart({super.key, required this.chartData});
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +34,10 @@ class SpendFrequencyChart extends StatelessWidget {
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 1),
-                      FlSpot(2, 3),
-                      FlSpot(4, 1.5),
-                      FlSpot(6, 4),
-                      FlSpot(8, 3),
-                      FlSpot(10, 2),
-                    ],
                     isCurved: true,
+                    spots: chartData.asMap().entries.map((entry) {
+                      return FlSpot(entry.key.toDouble(), entry.value.amount);
+                    }).toList(),
                     color: AppColors.primaryColor.withOpacity(1),
                     barWidth: 3,
                     dotData: const FlDotData(show: false),

@@ -5,6 +5,7 @@ import 'package:ie_montrac/models/Transaction.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
+import 'package:ie_montrac/utils/utilities.dart';
 
 class TransactionCard extends StatelessWidget {
   final Transaction item;
@@ -12,6 +13,8 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var color = mapCategoryToColor(item.category);
+    var iconPath = mapCategoryToIcon(item.category);
     return Container(
       height: Dimensions.getHeight(80),
       padding: EdgeInsets.all(Dimensions.getPadding(8)),
@@ -29,10 +32,10 @@ class TransactionCard extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius:
                     BorderRadius.circular(Dimensions.getBorderRadius(15)),
-                color: item.color.withOpacity(0.18)),
+                color: color.withOpacity(0.18)),
             child: SvgIcon(
-              path: item.iconPath,
-              color: item.color,
+              path: iconPath,
+              color: color,
               width: Dimensions.getIconSize(28),
               height: Dimensions.getIconSize(28),
             ),
@@ -45,7 +48,7 @@ class TransactionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item.title,
+                item.category,
                 style: AppFontSize.fontSizeTitle(fontWeight: FontWeight.normal),
               ),
               Text(
@@ -62,7 +65,7 @@ class TransactionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                item.amount,
+                item.amount.toString(),
                 style: AppFontSize.fontSizeMedium(
                     color: item.category == TransactionCategory.Expense
                         ? AppColors.redColor
@@ -70,7 +73,7 @@ class TransactionCard extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                item.time,
+                formatDate(item.createdAt),
                 style: AppFontSize.fontSizeMedium(
                     fontSize: Dimensions.getFontSize(14),
                     color: Colors.black.withOpacity(0.5)),

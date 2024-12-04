@@ -7,7 +7,7 @@ import '../utils/dimensions.dart';
 class CustomDropdown<T> extends StatelessWidget {
   final List<T> items; // List of items of generic type T
   final T? selectedValue; // Currently selected value
-  final String label; // Label text for the dropdown
+  final String? label; // Label text for the dropdown
   final ValueChanged<T?>? onChanged; // Callback when an item is selected
   final String Function(T) itemLabel; // Function to extract label from item
   final String? hintText;
@@ -16,7 +16,7 @@ class CustomDropdown<T> extends StatelessWidget {
       {Key? key,
       required this.items,
       required this.selectedValue,
-      required this.label,
+      this.label,
       required this.onChanged,
       required this.itemLabel,
       this.hintText})

@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ie_montrac/components/transaction.item.card.dart';
+import 'package:ie_montrac/models/transaction.dart';
 import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
+import 'package:ie_montrac/screens/home/transaction.history.screen.dart';
 
-import '../helper/expense.tracker.dart';
 import '../theme/app.colors.dart';
 import '../theme/app.font.size.dart';
 import '../utils/dimensions.dart';
 
-class RecentTransactionsView extends StatefulWidget {
-  const RecentTransactionsView({super.key});
+class RecentTransactionsView extends StatelessWidget {
+  final List<Transaction> transactions;
+  const RecentTransactionsView({super.key, required this.transactions});
 
-  @override
-  State<RecentTransactionsView> createState() => _RecentTransactionsViewState();
-}
-
-class _RecentTransactionsViewState extends State<RecentTransactionsView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -34,6 +32,9 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
                 ),
               ),
               InkWell(
+                onTap: () {
+                  Get.to(() => const TransactionHistoryScreen());
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(
                       vertical: Dimensions.getPadding(5),
@@ -54,35 +55,22 @@ class _RecentTransactionsViewState extends State<RecentTransactionsView> {
             ],
           ),
           const SizedBox(height: 16),
-
-          // Transaction List
-          ExpenseTrackerHelper.buildTransactionItem(
-              icon: "assets/images/shopping.svg",
-              color: AppColors.orangeColor.withOpacity(0.15),
-              title: 'Shopping',
-              subtitle: 'Buy some grocery',
-              amount: '- \$120',
-              time: '10:00 AM',
-              iconColor: AppColors.orangeColor),
-          const SizedBox(height: 16),
-          ExpenseTrackerHelper.buildTransactionItem(
-              onPress: () => {Get.to(() => const TransactionDetailsScreen())},
-              icon: "assets/images/subscription.svg",
-              color: AppColors.primaryColor.withOpacity(0.15),
-              title: 'Subscription',
-              subtitle: 'Disney+ Annual..',
-              amount: '- \$80',
-              time: '03:30 PM',
-              iconColor: AppColors.primaryColor),
-          const SizedBox(height: 16),
-          ExpenseTrackerHelper.buildTransactionItem(
-              icon: "assets/images/restaurant.svg",
-              color: AppColors.redColor.withOpacity(0.15),
-              title: 'Food',
-              subtitle: 'Buy a ramen',
-              amount: '- \$32',
-              time: '07:30 PM',
-              iconColor: AppColors.redColor),
+          ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: transactions.length,
+              itemBuilder: (BuildContext ctx, index) {
+                var item = transactions[index];
+                return TransactionItemCard(
+                  onPress: () {
+                    Get.to(() => const TransactionDetailsScreen(), arguments: {
+                      "transactionId": item.id,
+                      "transactionType": item.type
+                    });
+                  },
+                  transaction: item,
+                );
+              })
         ],
       ),
     );

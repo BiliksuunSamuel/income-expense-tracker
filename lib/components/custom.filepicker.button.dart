@@ -24,7 +24,7 @@ class CustomFilePickerButton extends StatelessWidget {
     return InkWell(
       onTap: onPress,
       child: Container(
-        height: Dimensions.getHeight(80),
+        height: Dimensions.getHeight(95),
         margin: EdgeInsets.symmetric(horizontal: Dimensions.getWidth(5)),
         padding: EdgeInsets.all(Dimensions.getPadding(10)),
         decoration: BoxDecoration(

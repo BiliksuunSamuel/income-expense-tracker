@@ -25,7 +25,7 @@ class FloatingActionMenuView extends StatelessWidget {
           left: Dimensions.getWidth(40),
           child: Container(
             width: Dimensions.deviceWidth * 0.8,
-            height: Dimensions.getHeight(150),
+            height: Dimensions.getHeight(185),
             padding: EdgeInsets.all(Dimensions.getPadding(10)),
             child: Stack(
               children: [

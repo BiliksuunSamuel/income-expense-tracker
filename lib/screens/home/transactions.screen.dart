@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/bottom-sheet/transactions.filter.bottom.sheet.dart';
-import 'package:ie_montrac/models/Transaction.dart';
 import 'package:ie_montrac/screens/home/financial.report.screen.dart';
 import 'package:ie_montrac/sections/grouped.transactions.section.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
@@ -135,12 +134,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 children: [
                   GroupedTransactionsSection(
                     title: "Today",
-                    transactions: Transaction.getTodaysTransactions(),
+                    transactions: [],
                   ),
                   SizedBox(height: Dimensions.getHeight(20)),
                   GroupedTransactionsSection(
-                      title: "Yesterday",
-                      transactions: Transaction.getPastTransactions()),
+                      title: "Yesterday", transactions: []),
                 ],
               ),
             ),

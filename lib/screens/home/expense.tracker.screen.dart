@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:ie_montrac/chart/spend.frequency.chart.dart';
-import 'package:ie_montrac/components/svg.icon.dart';
-import 'package:ie_montrac/helper/expense.tracker.dart';
-import 'package:ie_montrac/theme/app.colors.dart';
-import 'package:ie_montrac/theme/app.font.size.dart';
-import 'package:ie_montrac/utils/dimensions.dart';
-import 'package:ie_montrac/views/income.expense.summary.view.dart';
-import 'package:ie_montrac/views/recent.transactions.view.dart';
+import 'package:get/get.dart';
+import 'package:ie_montrac/api/controllers/transaction.controller.dart';
+import 'package:ie_montrac/utils/utilities.dart';
+import 'package:ie_montrac/views/app.view.dart';
+
+import '../../chart/spend.frequency.chart.dart';
+import '../../components/loader.dart';
+import '../../components/svg.icon.dart';
+import '../../helper/expense.tracker.dart';
+import '../../theme/app.colors.dart';
+import '../../theme/app.font.size.dart';
+import '../../utils/dimensions.dart';
+import '../../views/income.expense.summary.view.dart';
+import '../../views/recent.transactions.view.dart';
 
 class ExpenseTrackerScreen extends StatefulWidget {
   const ExpenseTrackerScreen({Key? key}) : super(key: key);
@@ -20,133 +26,146 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
   //
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
     super.initState();
   }
-  //
 
-  void _selectTimePeriod(String period) {
+  //handle load data
+  void _loadData() async {
+    var controller = Get.find<TransactionController>();
+    await Future.wait([
+      controller.getRecentTransactions(period: selectedTimePeriod),
+      controller.getTransactionSummaryByPeriod(selectedTimePeriod),
+      controller.getTransactionChartData(selectedTimePeriod)
+    ]);
+  }
+
+  void _selectTimePeriod(String period) async {
     setState(() {
       selectedTimePeriod = period;
     });
+    _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Header
-                  Padding(
-                    padding: EdgeInsets.all(Dimensions.getPadding(15)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: Dimensions.getWidth(40),
-                          height: Dimensions.getWidth(40),
-                          decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(
-                                  Dimensions.getBorderRadius(100))),
-                        ),
-                        const Spacer(),
-                        Expanded(
-                            child: Row(
-                          children: [
-                            const Icon(Icons.keyboard_arrow_down,
-                                color: AppColors.primaryColor),
-                            Text(
-                              'October',
-                              style: AppFontSize.fontSizeMedium(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+    return GetBuilder(
+        init: TransactionController(repository: Get.find()),
+        builder: (controller) {
+          return RefreshIndicator(
+              onRefresh: () async {
+                _loadData();
+              },
+              child: AppView(
+                backgroundColor: Colors.white,
+                body: Stack(
+                  children: [
+                    CustomScrollView(
+                      slivers: [
+                        SliverAppBar(
+                          pinned: true,
+                          backgroundColor: Colors.white,
+                          automaticallyImplyLeading: false,
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: Dimensions.getWidth(40),
+                                height: Dimensions.getWidth(40),
+                                decoration: BoxDecoration(
+                                    color: AppColors.primaryColor
+                                        .withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(
+                                        Dimensions.getBorderRadius(100))),
                               ),
-                            ),
-                          ],
-                        )),
-                        const Spacer(),
-                        const SvgIcon(
-                          path: "assets/images/notification.svg",
-                          color: AppColors.primaryColor,
+                              Expanded(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.keyboard_arrow_down,
+                                      color: AppColors.primaryColor),
+                                  Text(
+                                    convertMonth(DateTime.now().month),
+                                    style: AppFontSize.fontSizeMedium(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                              const SvgIcon(
+                                path: "assets/images/notification.svg",
+                                color: AppColors.primaryColor,
+                              ),
+                            ],
+                          ),
                         ),
+                        //sliver file remaining
+                        SliverFillRemaining(
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: [
+                              IncomeExpenseSummaryView(
+                                summary: controller.summary,
+                              ),
+
+                              // Spend Frequency
+                              SpendFrequencyChart(
+                                chartData: controller.chartData,
+                              ),
+                              // Time Period Selector
+                              Padding(
+                                padding:
+                                    EdgeInsets.all(Dimensions.getPadding(15)),
+                                child: SizedBox(
+                                  height: 50,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      ExpenseTrackerHelper.buildTimeButton(
+                                          'Today', selectedTimePeriod,
+                                          onPress: () {
+                                        _selectTimePeriod("Today");
+                                      }),
+                                      ExpenseTrackerHelper.buildTimeButton(
+                                          'Week', selectedTimePeriod,
+                                          onPress: () {
+                                        _selectTimePeriod("Week");
+                                        controller.getRecentTransactions(
+                                            period: selectedTimePeriod);
+                                      }),
+                                      ExpenseTrackerHelper.buildTimeButton(
+                                          'Month', selectedTimePeriod,
+                                          onPress: () {
+                                        _selectTimePeriod("Month");
+                                      }),
+                                      ExpenseTrackerHelper.buildTimeButton(
+                                          'Year', selectedTimePeriod,
+                                          onPress: () {
+                                        _selectTimePeriod("Year");
+                                      }),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // Recent Transactions
+                              RecentTransactionsView(
+                                transactions: controller.recentTransactions,
+                              )
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  // Balance
-                  Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(Dimensions.getPadding(15)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Account Balance',
-                            style: AppFontSize.fontSizeMedium(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            '\$9400',
-                            style: AppFontSize.fontSizeTitle(
-                              fontSize: Dimensions.getFontSize(32),
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const IncomeExpenseSummaryView(),
-
-                  // Spend Frequency
-                  const SpendFrequencyChart(),
-                  // Time Period Selector
-                  Padding(
-                    padding: EdgeInsets.all(Dimensions.getPadding(15)),
-                    child: SizedBox(
-                      height: 50,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          ExpenseTrackerHelper.buildTimeButton(
-                              'Today', selectedTimePeriod, onPress: () {
-                            _selectTimePeriod("Today");
-                          }),
-                          ExpenseTrackerHelper.buildTimeButton(
-                              'Week', selectedTimePeriod, onPress: () {
-                            _selectTimePeriod("Week");
-                          }),
-                          ExpenseTrackerHelper.buildTimeButton(
-                              'Month', selectedTimePeriod, onPress: () {
-                            _selectTimePeriod("Month");
-                          }),
-                          ExpenseTrackerHelper.buildTimeButton(
-                              'Year', selectedTimePeriod, onPress: () {
-                            _selectTimePeriod("Year");
-                          }),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Recent Transactions
-                  const RecentTransactionsView()
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                    Visibility(
+                        visible: controller.loading, child: const Loader())
+                  ],
+                ),
+              ));
+        });
   }
 }

@@ -2,6 +2,10 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/auth.controller.dart';
 
 import 'app.store.dart';
+import 'controllers/category.controller.dart';
+import 'controllers/expense.controller.dart';
+import 'controllers/income.controller.dart';
+import 'controllers/transaction.controller.dart';
 import 'http.client.dart';
 import 'repositories/repository.dart';
 
@@ -17,4 +21,8 @@ Future<void> init() async {
 
   //load controllers
   Get.lazyPut(() => AuthController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => ExpenseController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => CategoryController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => TransactionController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => IncomeController(repository: Get.find<Repository>()));
 }

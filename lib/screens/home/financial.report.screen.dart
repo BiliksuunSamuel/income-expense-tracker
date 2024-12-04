@@ -7,7 +7,6 @@ import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/transactions.category.summary.view.dart';
 
 import '../../components/transaction.card.dart';
-import '../../models/Transaction.dart';
 import '../../models/chart.segment.dart';
 import '../../theme/app.colors.dart';
 
@@ -207,12 +206,12 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                 Visibility(
                   visible: false,
                   child: ListView.builder(
-                    itemCount: Transaction.getTodaysTransactions().length,
+                    itemCount: 0,
                     padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext ctx, index) {
-                      var item = Transaction.getTodaysTransactions()[index];
+                      var item = null;
                       return TransactionCard(item: item);
                     },
                   ),

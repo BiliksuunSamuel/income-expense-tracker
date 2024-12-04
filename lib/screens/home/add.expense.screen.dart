@@ -1,15 +1,27 @@
-import 'package:flutter/cupertino.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ie_montrac/api/controllers/expense.controller.dart';
 import 'package:ie_montrac/bottom-sheet/file.picker.bottom.sheet.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/custom.dropdown.dart';
 import 'package:ie_montrac/components/custom.input.dart';
+import 'package:ie_montrac/components/custom.number.input.dart';
+import 'package:ie_montrac/components/custom.switch.button.dart';
+import 'package:ie_montrac/components/file.picker.button.dart';
+import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/primary.button.dart';
-import 'package:ie_montrac/components/svg.icon.dart';
+import 'package:ie_montrac/components/transaction.document.card.dart';
+import 'package:ie_montrac/components/transaction.invoice.image.dart';
+import 'package:ie_montrac/constants/app.options.dart';
 import 'package:ie_montrac/helper/resources.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
+import 'package:ie_montrac/utils/utilities.dart';
 import 'package:ie_montrac/views/app.view.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../api/controllers/category.controller.dart';
+import '../../models/category.dart';
 import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
 
@@ -23,197 +35,441 @@ class AddExpenseScreen extends StatefulWidget {
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
   bool isRepeatEnabled = false;
   double amount = 0;
+  var cameraImage;
+  var galleryImage;
+  var attachment;
+  String? fileData;
+  String? fileType;
+
+  final ImagePicker _picker = ImagePicker();
+
+  //handle document
+  void _handleDocument() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        dialogTitle: "Select a document",
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx']);
+    if (result == null) {
+      return;
+    }
+    attachment = result.files.first;
+    var data = await convertToBase64(result.files.single.path!);
+    setState(() {
+      fileType = 'document';
+      fileData = data;
+    });
+  }
+
+  //handle gallery
+  void _handleGallery() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      var data = await convertToBase64(image.path);
+      setState(() {
+        galleryImage = image;
+        fileType = 'image';
+        cameraImage = null;
+        fileData = data;
+      });
+    }
+  }
+
+  //handle camera
+  void _handleCamera() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      var data = await convertToBase64(image.path);
+      setState(() {
+        cameraImage = image;
+        fileType = 'image';
+        fileData = data;
+        galleryImage = null;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
+  }
+
+  //handle load data
+  void _loadData() async {
+    var controller = Get.find<CategoryController>();
+    await controller.getCategories();
+  }
+
+  void _handleSubmit(Category category) async {
+    //extract file extension from cameraImage,galleryImage,attachment
+    var fileExtension = cameraImage?.path.split('.').last ??
+        galleryImage?.path.split('.').last ??
+        attachment?.name.split('.').last;
+
+    var fileName = cameraImage?.path.split('/').last ??
+        galleryImage?.path.split('/').last ??
+        attachment?.name;
+
+    await Get.find<ExpenseController>().addTransaction(category,
+        fileData ?? Resources.invoicePlaceholder, fileName, fileExtension);
+    //reset fields
+    setState(() {
+      cameraImage = null;
+      galleryImage = null;
+      attachment = null;
+      fileData = null;
+      fileType = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AppView(
-      backgroundColor: AppColors.redColor,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              const SliverAppBar(
-                pinned: true,
-                automaticallyImplyLeading: false,
-                backgroundColor: AppColors.redColor,
-                title: AppHeaderTitle(
-                  title: "Expense",
-                  titleColor: Colors.white,
-                  iconColor: Colors.white,
-                ),
-              ),
-              SliverFillRemaining(
-                child: Container(
-                  child: Column(
+    return GetBuilder(
+        init: CategoryController(repository: Get.find()),
+        builder: (categoryController) {
+          return GetBuilder(
+              init: ExpenseController(repository: Get.find()),
+              builder: (controller) {
+                return AppView(
+                  backgroundColor: AppColors.redColor,
+                  body: Stack(
                     children: [
-                      Container(
-                        color: AppColors.redColor,
-                        width: const BoxConstraints.expand().maxWidth,
-                        height: Dimensions.getHeight(180),
-                        padding: EdgeInsets.all(Dimensions.getPadding(20)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "How Much",
-                              style: AppFontSize.fontSizeTitle(
-                                  color: Colors.white60,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: Dimensions.getFontSize(28)),
+                      CustomScrollView(
+                        slivers: [
+                          const SliverAppBar(
+                            pinned: true,
+                            automaticallyImplyLeading: false,
+                            backgroundColor: AppColors.redColor,
+                            title: AppHeaderTitle(
+                              title: "Expense",
+                              titleColor: Colors.white,
+                              iconColor: Colors.white,
                             ),
-                            SizedBox(
-                              height: Dimensions.getHeight(5),
-                            ),
-                            Text(
-                              "\$0",
-                              style: AppFontSize.fontSizeTitle(
-                                  fontSize: Dimensions.getFontSize(48),
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 7,
-                          child: Container(
-                            padding: EdgeInsets.all(Dimensions.getPadding(20)),
-                            height: const BoxConstraints.expand().maxHeight,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(
-                                        Dimensions.getBorderRadius(30)),
-                                    topRight: Radius.circular(
-                                        Dimensions.getBorderRadius(30)))),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const CustomInput(
-                                  hintText: "Category",
-                                ),
-                                SizedBox(
-                                  height: Dimensions.getHeight(20),
-                                ),
-                                const CustomInput(
-                                  hintText: "Description",
-                                  minLines: 2,
-                                ),
-                                SizedBox(
-                                  height: Dimensions.getHeight(20),
-                                ),
-                                CustomDropdown(
-                                    items: ["Wallet"],
-                                    selectedValue: "Wallet",
-                                    label: "",
-                                    onChanged: (String? val) {},
-                                    itemLabel: (String item) {
-                                      return item;
-                                    }),
-                                SizedBox(
-                                  height: Dimensions.getHeight(20),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        builder: (builder) {
-                                          return const FilePickerBottomSheet();
-                                        });
-                                  },
-                                  child: Container(
-                                    height: Dimensions.getHeight(50),
+                          ),
+                          SliverFillRemaining(
+                            child: Container(
+                              padding: EdgeInsets.zero,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    color: AppColors.redColor,
+                                    width:
+                                        const BoxConstraints.expand().maxWidth,
+                                    height: Dimensions.getHeight(180),
                                     padding: EdgeInsets.all(
-                                        Dimensions.getPadding(8)),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            Dimensions.getBorderRadius(12)),
-                                        border: Border.all(
-                                            width: Dimensions.getWidth(0.35),
-                                            color:
-                                                Colors.grey.withOpacity(0.85))),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        SvgIcon(
-                                          path: Resources.attachment,
-                                          width: Dimensions.getWidth(16),
-                                          height: Dimensions.getWidth(16),
-                                          color: Colors.grey.withOpacity(0.5),
-                                        ),
-                                        SizedBox(
-                                          width: Dimensions.getWidth(10),
-                                        ),
-                                        Text(
-                                          "Add Attachment",
-                                          style: AppFontSize.fontSizeTitle(
-                                              fontSize:
-                                                  Dimensions.getFontSize(16),
-                                              color: Colors.grey),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: Dimensions.getHeight(20),
-                                ),
-                                // Repeat Toggle
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
+                                        Dimensions.getPadding(20)),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Repeat',
-                                          style: AppFontSize.fontSizeMedium(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                          "How Much",
+                                          style: AppFontSize.fontSizeTitle(
+                                              color: Colors.white60,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize:
+                                                  Dimensions.getFontSize(28)),
                                         ),
-                                        Text(
-                                          'Repeat transaction',
-                                          style: AppFontSize.fontSizeMedium(
-                                            color: Colors.grey,
-                                            fontSize: 14,
-                                          ),
+                                        SizedBox(
+                                          height: Dimensions.getHeight(5),
                                         ),
+                                        //there is white space to the left of the input
+                                        CustomNumberInput(
+                                          controller:
+                                              controller.amountController,
+                                        )
                                       ],
                                     ),
-                                    CupertinoSwitch(
-                                      value: isRepeatEnabled,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isRepeatEnabled = value;
-                                        });
-                                      },
-                                      activeColor: AppColors.primaryColor,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: Dimensions.getHeight(20),
-                                ),
-                                PrimaryButton(title: "Continue")
-                              ],
+                                  ),
+                                  Expanded(
+                                      flex: 7,
+                                      child: Container(
+                                        padding: EdgeInsets.all(
+                                            Dimensions.getPadding(20)),
+                                        height: const BoxConstraints.expand()
+                                            .maxHeight,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(
+                                                    Dimensions.getBorderRadius(
+                                                        30)),
+                                                topRight: Radius.circular(
+                                                    Dimensions.getBorderRadius(
+                                                        30)))),
+                                        child: ListView(
+                                          padding: EdgeInsets.zero,
+                                          children: [
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            CustomDropdown(
+                                              hintText: "Category",
+                                              label: "Select Category",
+                                              selectedValue: categoryController
+                                                  .selectedCategory,
+                                              items:
+                                                  categoryController.categories,
+                                              itemLabel: (Category item) {
+                                                return item.title;
+                                              },
+                                              onChanged: (Category? val) {
+                                                categoryController
+                                                    .selectedCategory = val;
+                                              },
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            CustomInput(
+                                              hintText: "Description",
+                                              minLines: 2,
+                                              controller: controller
+                                                  .descriptionController,
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            FilePickerButton(
+                                              onPress: () {
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext btx) {
+                                                      return FilePickerBottomSheet(
+                                                        onCamera: () {
+                                                          Navigator.pop(btx);
+                                                          _handleCamera();
+                                                        },
+                                                        onDocument: () {
+                                                          Navigator.pop(btx);
+                                                          _handleDocument();
+                                                        },
+                                                        onImage: () {
+                                                          Navigator.pop(btx);
+                                                          _handleGallery();
+                                                        },
+                                                      );
+                                                    });
+                                              },
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            Visibility(
+                                                visible: fileType == 'image',
+                                                child: TransactionInvoiceImage(
+                                                  filePath: galleryImage
+                                                          ?.path ??
+                                                      cameraImage?.path ??
+                                                      Resources
+                                                          .invoicePlaceholder,
+                                                )),
+                                            Visibility(
+                                                visible: fileType == 'document',
+                                                child: TransactionDocument(
+                                                    fileName:
+                                                        attachment?.name)),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(15),
+                                            ),
+                                            // Repeat Toggle
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Repeat',
+                                                      style: AppFontSize
+                                                          .fontSizeMedium(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'Repeat transaction',
+                                                      style: AppFontSize
+                                                          .fontSizeMedium(
+                                                        color: Colors.grey,
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                CustomSwitchButton(
+                                                  value: controller
+                                                      .repeatTransaction,
+                                                  onChanged: (value) {
+                                                    controller
+                                                        .setRepeatTransaction(
+                                                            value);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            // Repeat Frequency
+                                            Visibility(
+                                              visible:
+                                                  controller.repeatTransaction,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Repeat Frequency',
+                                                    style: AppFontSize
+                                                        .fontSizeMedium(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        Dimensions.getHeight(
+                                                            10),
+                                                  ),
+                                                  CustomDropdown(
+                                                    hintText: "Frequency",
+                                                    selectedValue: controller
+                                                        .repeatFrequency,
+                                                    items: AppOptions
+                                                        .transactionRepeatFrequencies,
+                                                    itemLabel: (String item) {
+                                                      return item;
+                                                    },
+                                                    onChanged: (String? val) {
+                                                      controller
+                                                          .setRepeatFrequency(
+                                                              val);
+                                                    },
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        Dimensions.getHeight(
+                                                            20),
+                                                  ),
+                                                  CustomInput(
+                                                    prefixIcon: Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: Dimensions
+                                                              .getHeight(12),
+                                                          left: Dimensions
+                                                              .getWidth(10),
+                                                          right: Dimensions
+                                                              .getWidth(10)),
+                                                      child: Text(
+                                                        "Repeat Every ",
+                                                        style: AppFontSize
+                                                            .fontSizeMedium(),
+                                                      ),
+                                                    ),
+                                                    hintText: "0",
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    suffixIcon: Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: Dimensions
+                                                              .getHeight(12),
+                                                          left: Dimensions
+                                                              .getWidth(10),
+                                                          right: Dimensions
+                                                              .getWidth(10)),
+                                                      child: Text(
+                                                        controller
+                                                                .repeatFrequency ??
+                                                            "Days",
+                                                        style: AppFontSize
+                                                            .fontSizeMedium(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        Dimensions.getHeight(
+                                                            20),
+                                                  ),
+                                                  //EndDate: material calendar picker
+                                                  CustomInput(
+                                                    hintText:
+                                                        "Repeat Transaction Until",
+                                                    label:
+                                                        "Repeat Transaction Until",
+                                                    controller:
+                                                        TextEditingController(
+                                                            text: formatDate(
+                                                                controller
+                                                                    .repeatEndDate!)),
+                                                    suffixIcon: IconButton(
+                                                        onPressed: () async {
+                                                          var selectedDate =
+                                                              await showDatePicker(
+                                                                  context:
+                                                                      context,
+                                                                  firstDate:
+                                                                      DateTime
+                                                                          .now(),
+                                                                  //now plus 3600 days
+                                                                  lastDate: DateTime
+                                                                          .now()
+                                                                      .add(const Duration(
+                                                                          days:
+                                                                              3600)));
+
+                                                          controller
+                                                              .setRepeatEndDate(
+                                                                  selectedDate ??
+                                                                      DateTime
+                                                                          .now());
+                                                        },
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .calendar_month_outlined,
+                                                            color:
+                                                                Colors.grey)),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+                                            PrimaryButton(
+                                              title: "Continue",
+                                              disabled: controller.loading,
+                                              onPressed: () {
+                                                _handleSubmit(categoryController
+                                                    .selectedCategory!);
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                      ))
+                                ],
+                              ),
                             ),
-                          ))
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                          visible: categoryController.loading,
+                          child: const Loader())
                     ],
                   ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+                );
+              });
+        });
   }
 }

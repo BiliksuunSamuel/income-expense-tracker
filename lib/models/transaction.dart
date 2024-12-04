@@ -1,73 +1,103 @@
-import 'package:flutter/material.dart';
-import 'package:ie_montrac/enums/transaction.category.dart';
-import 'package:ie_montrac/helper/resources.dart';
-import 'package:ie_montrac/theme/app.colors.dart';
-
 class Transaction {
-  final String title;
+  final String id;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final String type;
+  final double amount;
+  final int year;
+  final int month;
+  final String currency;
+  final String category;
   final String description;
-  final String time;
-  final String amount;
-  final Color color;
-  final String iconPath;
-  final TransactionCategory category;
+  final String? invoiceUrl;
+  final String userId;
+  final bool repeatTransaction;
+  final int? repeatInterval;
+  final DateTime? repeatTransactionEndDate;
+  final String? repeatFrequency;
+  final String account;
+  final String username;
+  final String? invoiceFileName;
+  final String? invoiceFileType;
 
-  Transaction(
-      {required this.title,
-      required this.description,
-      required this.time,
-      required this.amount,
-      required this.color,
-      required this.iconPath,
-      required this.category});
+  Transaction({
+    required this.id,
+    required this.createdAt,
+    this.updatedAt,
+    required this.type,
+    required this.amount,
+    required this.year,
+    required this.month,
+    required this.currency,
+    required this.category,
+    required this.description,
+    this.invoiceUrl,
+    required this.userId,
+    required this.repeatTransaction,
+    this.repeatInterval,
+    this.repeatTransactionEndDate,
+    this.repeatFrequency,
+    required this.account,
+    required this.username,
+    this.invoiceFileName,
+    this.invoiceFileType,
+  });
 
-  static List<Transaction> getPastTransactions() {
-    return [
-      Transaction(
-          title: "Salary",
-          description: "Salary for july",
-          time: "04:30 PM",
-          amount: "+\$5000",
-          color: AppColors.greenColor,
-          iconPath: Resources.salary,
-          category: TransactionCategory.Income),
-      Transaction(
-          title: "Transportation",
-          description: "Charging Tesla",
-          time: "08:30 PM",
-          amount: "-\$18",
-          color: AppColors.blueColor,
-          iconPath: Resources.car,
-          category: TransactionCategory.Expense)
-    ];
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    return Transaction(
+      id: json['id'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt:
+          json["updatedAt"] != null ? DateTime.parse(json['updatedAt']) : null,
+      type: json['type'],
+      amount: json['amount'].toDouble(),
+      year: json['year'],
+      month: json['month'],
+      currency: json['currency'],
+      category: json['category'],
+      description: json['description'],
+      invoiceUrl: json['invoiceUrl'],
+      userId: json['userId'],
+      repeatTransaction: json['repeatTransaction'],
+      repeatInterval: json['repeatInterval'],
+      repeatTransactionEndDate: json["repeatTransactionEndDate"] == null
+          ? null
+          : DateTime.parse(json['repeatTransactionEndDate']),
+      repeatFrequency: json['repeatFrequency'],
+      account: json['account'],
+      username: json['username'],
+      invoiceFileName: json['invoiceFileName'],
+      invoiceFileType: json['invoiceFileType'],
+    );
   }
 
-  static List<Transaction> getTodaysTransactions() {
-    return [
-      Transaction(
-          title: "Shopping",
-          description: "Buy some grocery",
-          time: "10:00 AM",
-          amount: "-\$120",
-          color: AppColors.orangeColor,
-          iconPath: Resources.shopping,
-          category: TransactionCategory.Expense),
-      Transaction(
-          title: "Subscription",
-          description: "Disney+ Annual",
-          time: "03:30 PM",
-          amount: "-\$80",
-          color: AppColors.primaryColor,
-          iconPath: Resources.subscription,
-          category: TransactionCategory.Expense),
-      Transaction(
-          title: "Food",
-          description: "Buy a ramen",
-          time: "07:30 PM",
-          amount: "-\$32",
-          color: AppColors.redColor,
-          iconPath: Resources.restaurant,
-          category: TransactionCategory.Expense)
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      'type': type,
+      'amount': amount,
+      'year': year,
+      'month': month,
+      'currency': currency,
+      'category': category,
+      'description': description,
+      'invoiceUrl': invoiceUrl,
+      'userId': userId,
+      'repeatTransaction': repeatTransaction,
+      'repeatInterval': repeatInterval,
+      'repeatTransactionEndDate': repeatTransactionEndDate?.toIso8601String(),
+      'repeatFrequency': repeatFrequency,
+      'account': account,
+      'username': username,
+      'invoiceFileName': invoiceFileName,
+      'invoiceFileType': invoiceFileType,
+    };
+  }
+
+  //from list
+  static List<Transaction> fromJsonList(List list) {
+    return list.map((item) => Transaction.fromJson(item)).toList();
   }
 }

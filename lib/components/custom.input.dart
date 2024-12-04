@@ -15,6 +15,8 @@ class CustomInput extends StatelessWidget {
   final Widget? suffixIcon;
   final int? minLines;
   final int? maxLines;
+  final Widget? prefix;
+  final Widget? suffix;
   const CustomInput(
       {super.key,
       this.controller,
@@ -27,7 +29,9 @@ class CustomInput extends StatelessWidget {
       this.prefixIcon,
       this.suffixIcon,
       this.minLines = 1,
-      this.maxLines});
+      this.maxLines,
+      this.prefix,
+      this.suffix});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,8 @@ class CustomInput extends StatelessWidget {
         decoration: decoration ??
             InputDecoration(
                 label: label != null ? Text(label!) : null,
+                prefix: prefix,
+                suffix: suffix,
                 hintText: hintText ?? label,
                 contentPadding: EdgeInsets.symmetric(
                     horizontal: Dimensions.getPadding(16),
