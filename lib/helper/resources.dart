@@ -33,4 +33,8 @@ class Resources {
   static const String logout = "assets/images/logout.svg";
   static const String handShake = "assets/images/handshake.svg";
   static const String uncategorized = "assets/images/uncategorized.svg";
+  static const String health = "assets/images/health.svg";
+  static const String empty = "assets/images/empty.svg";
+  static const String user2 = "assets/images/user2.svg";
+  static const String payment = "assets/images/payment.svg";
 }

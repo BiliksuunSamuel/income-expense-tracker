@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/components/response.modal.dart';
 import 'package:ie_montrac/models/auth.response.dart';
+import 'package:ie_montrac/models/grouped.transaction.dart';
 import 'package:ie_montrac/models/transaction.chart.data.dart';
 import 'package:ie_montrac/models/transaction.summary.dart';
 
@@ -26,6 +27,39 @@ class TransactionController extends GetxController {
   Transaction? transaction;
   TransactionSummary summary = TransactionSummary(income: 0, expense: 0);
   List<TransactionChartData> chartData = [];
+  GroupedTransaction groupedTransaction =
+      GroupedTransaction(today: [], yesterday: []);
+
+  //get grouped transactions
+  Future<void> getGroupedTransactions() async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request = HttpRequestDto(
+        "/api/transactions/grouped",
+        token: authResponse?.token,
+      );
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+      groupedTransaction = GroupedTransaction.fromJson(res.data);
+      loading = false;
+      update();
+    } catch (e) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //get transaction chart data
   Future<void> getTransactionChartData(String period) async {

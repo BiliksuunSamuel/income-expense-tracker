@@ -38,7 +38,7 @@ class IncomeController extends GetxController {
           type: TransactionType.Income.name,
           category: category.title,
           account: "Default",
-          currency: "GHS",
+          currency: authResponse?.user?.currency!,
           repeatTransaction: repeatTransaction,
           repeatFrequency: repeatFrequency,
           repeatInterval: "1",

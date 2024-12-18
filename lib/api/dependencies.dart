@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/auth.controller.dart';
+import 'package:ie_montrac/api/controllers/budget.controller.dart';
+import 'package:ie_montrac/api/controllers/reports.controller.dart';
 
 import 'app.store.dart';
 import 'controllers/category.controller.dart';
@@ -23,6 +25,9 @@ Future<void> init() async {
   Get.lazyPut(() => AuthController(repository: Get.find<Repository>()));
   Get.lazyPut(() => ExpenseController(repository: Get.find<Repository>()));
   Get.lazyPut(() => CategoryController(repository: Get.find<Repository>()));
-  Get.lazyPut(() => TransactionController(repository: Get.find<Repository>()));
+  Get.put(TransactionController(repository: Get.find<Repository>()),
+      permanent: true);
   Get.lazyPut(() => IncomeController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => BudgetController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => ReportsController(repository: Get.find<Repository>()));
 }

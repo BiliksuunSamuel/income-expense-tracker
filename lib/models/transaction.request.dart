@@ -13,6 +13,7 @@ class TransactionRequest {
   String? invoiceFileType;
   String? invoiceFileName;
   String? repeatTransactionEndDate;
+  String? budgetId;
 
   TransactionRequest(
       {this.amount,
@@ -28,7 +29,8 @@ class TransactionRequest {
       this.repeatInterval,
       this.invoiceFileType,
       this.invoiceFileName,
-      this.repeatTransactionEndDate});
+      this.repeatTransactionEndDate,
+      this.budgetId});
 
   Map<String, dynamic> toJson() {
     return {
@@ -45,7 +47,8 @@ class TransactionRequest {
       "repeatInterval": repeatInterval,
       "invoiceFileType": invoiceFileType,
       "invoiceFileName": invoiceFileName,
-      "repeatTransactionEndDate": repeatTransactionEndDate
+      "repeatTransactionEndDate": repeatTransactionEndDate,
+      "budgetId": budgetId
     };
   }
 }

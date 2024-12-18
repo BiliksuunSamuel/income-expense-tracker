@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/transaction.item.card.dart';
 import 'package:ie_montrac/models/transaction.dart';
 import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
@@ -55,22 +56,28 @@ class RecentTransactionsView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ListView.builder(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              itemCount: transactions.length,
-              itemBuilder: (BuildContext ctx, index) {
-                var item = transactions[index];
-                return TransactionItemCard(
-                  onPress: () {
-                    Get.to(() => const TransactionDetailsScreen(), arguments: {
-                      "transactionId": item.id,
-                      "transactionType": item.type
-                    });
-                  },
-                  transaction: item,
-                );
-              })
+          if (transactions.isEmpty)
+            Center(
+              child: EmptyStateView(),
+            )
+          else
+            ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: transactions.length,
+                itemBuilder: (BuildContext ctx, index) {
+                  var item = transactions[index];
+                  return TransactionItemCard(
+                    onPress: () {
+                      Get.to(() => const TransactionDetailsScreen(),
+                          arguments: {
+                            "transactionId": item.id,
+                            "transactionType": item.type
+                          });
+                    },
+                    transaction: item,
+                  );
+                })
         ],
       ),
     );

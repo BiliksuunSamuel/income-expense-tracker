@@ -36,6 +36,15 @@ String mapCategoryToIcon(String category) {
     case "Shopping":
     case "shopping":
       return Resources.shopping;
+    case "subscription":
+    case "Subscription":
+      return Resources.subscription;
+    case "Health":
+    case "health":
+      return Resources.health;
+    case "Payment":
+    case "payment":
+      return Resources.payment;
     case "Others":
     case "others":
       return Resources.uncategorized;
@@ -49,6 +58,8 @@ Color mapCategoryToColor(String category) {
   switch (category) {
     case "Food":
     case "food":
+    case "health":
+    case "Health":
       return AppColors.redColor;
     case "Transport":
     case "transport":
@@ -58,6 +69,12 @@ Color mapCategoryToColor(String category) {
     case "Shopping":
     case "shopping":
       return AppColors.orangeColor;
+    case "subscription":
+    case "Subscription":
+      return AppColors.primaryColor;
+    case "Payment":
+    case "payment":
+      return AppColors.greenColor;
     case "Others":
     case "others":
       return AppColors.textGray;
@@ -145,5 +162,14 @@ extension IsNullOrWhiteSpace on String {
 extension ToTimeOfDay on DateTime {
   String get toTimeOfDay {
     return "${this.hour > 12 ? (this.hour - 12).toString().padLeft(2, "0") : this.hour.toString().padLeft(2, '0')}:${this.minute.toString().padLeft(2, '0')} ${this.hour < 12 ? "AM" : "PM"}";
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  bool isToday() {
+    final now = DateTime.now();
+    return this.year == now.year &&
+        this.month == now.month &&
+        this.day == now.day;
   }
 }

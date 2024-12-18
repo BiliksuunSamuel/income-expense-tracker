@@ -12,7 +12,7 @@ class DateTimeSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     var day = convertToNth(datetime.day);
     var month = convertMonth(datetime.month);
-    var value = "$day $month ${datetime.year}";
+    var value = datetime.isToday() ? "Today" : "$day $month ${datetime.year}";
     return Container(
       margin: EdgeInsets.symmetric(vertical: Dimensions.getPadding(10)),
       child: Row(
@@ -40,7 +40,7 @@ class DateTimeSeparator extends StatelessWidget {
                   ),
                 ),
               )),
-          const Expanded(flex: 2, child: const Divider())
+          const Expanded(flex: 2, child: Divider())
         ],
       ),
     );

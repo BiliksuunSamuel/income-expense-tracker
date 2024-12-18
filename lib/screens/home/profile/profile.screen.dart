@@ -51,20 +51,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      width: Dimensions.getWidth(80),
-                                      height: Dimensions.getWidth(80),
-                                      decoration: BoxDecoration(
+                                    if (authController
+                                            .authResponse?.user?.picture !=
+                                        null)
+                                      Container(
+                                        width: Dimensions.getWidth(60),
+                                        height: Dimensions.getWidth(60),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                                Dimensions.getBorderRadius(
+                                                    100)),
+                                            border: Border.all(
+                                                width: Dimensions.getWidth(0),
+                                                color: AppColors.primaryColor),
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                    authController.authResponse!
+                                                        .user!.picture!),
+                                                fit: BoxFit.cover)),
+                                      )
+                                    else
+                                      Container(
+                                        width: Dimensions.getWidth(60),
+                                        height: Dimensions.getWidth(60),
+                                        decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
                                               Dimensions.getBorderRadius(100)),
                                           border: Border.all(
                                               width: Dimensions.getWidth(0),
                                               color: AppColors.primaryColor),
-                                          image: const DecorationImage(
-                                              image: AssetImage(
-                                                  Resources.profileAvatar),
-                                              fit: BoxFit.cover)),
-                                    ),
+                                        ),
+                                        child: SvgIcon(
+                                          path: Resources.user2,
+                                          color: AppColors.textGray,
+                                          height: Dimensions.getIconSize(24),
+                                          width: Dimensions.getIconSize(24),
+                                        ),
+                                      ),
                                     SizedBox(
                                       width: Dimensions.getWidth(10),
                                     ),

@@ -7,6 +7,7 @@ import 'package:ie_montrac/enums/transaction.type.dart';
 import 'package:ie_montrac/models/auth.response.dart';
 
 import '../../components/response.modal.dart';
+import '../../dtos/budget.for.dropdown.dart';
 import '../../models/category.dart';
 import '../../models/transaction.request.dart';
 
@@ -23,6 +24,43 @@ class ExpenseController extends GetxController {
   String? repeatFrequency;
   DateTime? repeatEndDate = DateTime.now();
   AuthResponse? authResponse;
+  BudgetForDropdown? selectedBudget;
+  List<BudgetForDropdown> budgets = [];
+
+  //handle set budget
+  void setBudget(BudgetForDropdown budget) {
+    selectedBudget = budget;
+    update();
+  }
+
+  //handle get budgets
+  Future<void> getBudgets() async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request =
+          HttpRequestDto("/api/budgets/dropdown", token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+      loading = false;
+      budgets = BudgetForDropdown.listFromJson(res.data);
+      update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //add transaction
   Future<void> addTransaction(Category category, String invoice,
@@ -37,14 +75,15 @@ class ExpenseController extends GetxController {
           type: TransactionType.Expense.name,
           category: category.title,
           account: "Default",
-          currency: "GHS",
+          currency: authResponse?.user?.currency!,
           repeatTransaction: repeatTransaction,
           repeatFrequency: repeatFrequency,
           repeatInterval: "1",
           repeatTransactionEndDate: repeatEndDate?.toString(),
           invoice: invoice,
           invoiceFileName: invoiceFileName,
-          invoiceFileType: invoiceFileType);
+          invoiceFileType: invoiceFileType,
+          budgetId: selectedBudget?.id);
       var request = HttpRequestDto("/api/transactions",
           token: authResponse?.token, data: transaction.toJson());
       var res = await repository.postAsync(request);

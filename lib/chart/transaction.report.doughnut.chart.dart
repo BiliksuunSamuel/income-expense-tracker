@@ -8,12 +8,14 @@ import '../models/chart.segment.dart';
 class TransactionReportDoughnutChart extends StatelessWidget {
   final double totalAmount;
   final List<ChartSegment> segments;
+  final String currency;
 
-  const TransactionReportDoughnutChart({
-    Key? key,
-    required this.totalAmount,
-    required this.segments,
-  }) : super(key: key);
+  const TransactionReportDoughnutChart(
+      {Key? key,
+      required this.totalAmount,
+      required this.segments,
+      required this.currency})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +37,15 @@ class TransactionReportDoughnutChart extends StatelessWidget {
                 );
               }).toList(),
               sectionsSpace: 0,
-              centerSpaceRadius: Dimensions.getBorderRadius(85),
+              centerSpaceRadius: Dimensions.getBorderRadius(120),
               startDegreeOffset: -90,
             ),
           ),
         ),
         Text(
-          '\$${totalAmount.toStringAsFixed(0)}',
+          '$currency ${totalAmount.toStringAsFixed(2)}',
           style: AppFontSize.fontSizeTitle(
-            fontSize: Dimensions.getFontSize(36),
+            fontSize: Dimensions.getFontSize(22),
             fontWeight: FontWeight.bold,
           ),
         ),

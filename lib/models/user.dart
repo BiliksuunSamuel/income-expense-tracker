@@ -15,6 +15,8 @@ class User {
   final bool authenticated;
   final bool resetPassword;
   final DateTime? otpExpiryTime;
+  String? currency;
+  String? currencyName;
 
   User(
       {this.id,
@@ -32,7 +34,9 @@ class User {
       this.isGoogleAuth,
       this.authenticated = false,
       this.resetPassword = false,
-      this.otpExpiryTime});
+      this.otpExpiryTime,
+      this.currency,
+      this.currencyName});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -57,7 +61,9 @@ class User {
         resetPassword: json["resetPassword"],
         otpExpiryTime: json["otpExpiryTime"] != null
             ? DateTime.parse(json["otpExpiryTime"])
-            : null);
+            : null,
+        currency: json["currency"] as String?,
+        currencyName: json["currencyName"] as String?);
   }
 
   Map<String, dynamic> toJson() {
@@ -77,7 +83,9 @@ class User {
       'isGoogleAuth': isGoogleAuth,
       "authenticated": authenticated,
       "resetPassword": resetPassword,
-      "otpExpiryTime": otpExpiryTime?.toIso8601String()
+      "otpExpiryTime": otpExpiryTime?.toIso8601String(),
+      "currency": currency,
+      "currencyName": currencyName
     };
   }
 }

@@ -5,4 +5,10 @@ class AppOptions {
     "Monthly",
     "Yearly"
   ];
+
+  static const List<String> financialReportPeriods = [
+    "Custom",
+    "Month",
+    "Year"
+  ];
 }

@@ -7,7 +7,9 @@ import '../utils/dimensions.dart';
 
 class IncomeExpenseSummaryView extends StatelessWidget {
   final TransactionSummary summary;
-  const IncomeExpenseSummaryView({super.key, required this.summary});
+  final String currency;
+  const IncomeExpenseSummaryView(
+      {super.key, required this.summary, required this.currency});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class IncomeExpenseSummaryView extends StatelessWidget {
             child: TransactionSummaryCard(
                 color: AppColors.greenColor,
                 title: "Income",
-                amount: "GHS ${summary.income}",
+                amount: "${currency} ${summary.income}",
                 iconPath: "assets/images/income.svg"),
           ),
           SizedBox(

@@ -10,6 +10,8 @@ import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/app.view.dart';
 import 'package:ie_montrac/views/content.container.dart';
 
+import '../home/profile/currency.update.screen.dart';
+
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
@@ -33,6 +35,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       var authUser = await repository.getAuthUser();
       if (authUser != null) {
         if (authUser.user!.authenticated) {
+          if (authUser.user!.currency == null) {
+            return Get.to(() => const CurrencyUpdateScreen());
+          }
           return Get.to(() => const HomeScreen());
         }
         Get.to(() => const OtpVerifyScreen());

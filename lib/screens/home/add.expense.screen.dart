@@ -21,6 +21,7 @@ import 'package:ie_montrac/views/app.view.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../api/controllers/category.controller.dart';
+import '../../dtos/budget.for.dropdown.dart';
 import '../../models/category.dart';
 import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
@@ -99,7 +100,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   //handle load data
   void _loadData() async {
     var controller = Get.find<CategoryController>();
-    await controller.getCategories();
+    var expenseController = Get.find<ExpenseController>();
+    await Future.wait(
+        [controller.getCategories(), expenseController.getBudgets()]);
   }
 
   void _handleSubmit(Category category) async {
@@ -203,6 +206,25 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                         child: ListView(
                                           padding: EdgeInsets.zero,
                                           children: [
+                                            SizedBox(
+                                              height: Dimensions.getHeight(20),
+                                            ),
+
+                                            CustomDropdown(
+                                                hintText: "Budget",
+                                                label: "Select Budget",
+                                                items: controller.budgets,
+                                                selectedValue:
+                                                    controller.selectedBudget,
+                                                onChanged: (BudgetForDropdown?
+                                                    budget) {
+                                                  controller.setBudget(budget!);
+                                                },
+                                                itemLabel:
+                                                    (BudgetForDropdown item) {
+                                                  return item.title;
+                                                }),
+
                                             SizedBox(
                                               height: Dimensions.getHeight(20),
                                             ),

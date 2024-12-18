@@ -111,12 +111,16 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
                             children: [
                               IncomeExpenseSummaryView(
                                 summary: controller.summary,
+                                currency:
+                                    controller.authResponse?.user?.currency ??
+                                        "",
                               ),
 
                               // Spend Frequency
-                              SpendFrequencyChart(
-                                chartData: controller.chartData,
-                              ),
+                              if (controller.chartData.isNotEmpty)
+                                SpendFrequencyChart(
+                                  chartData: controller.chartData,
+                                ),
                               // Time Period Selector
                               Padding(
                                 padding:

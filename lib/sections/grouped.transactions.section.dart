@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ie_montrac/models/Transaction.dart';
+import 'package:ie_montrac/components/empty.state.view.dart';
+import 'package:ie_montrac/components/transaction.item.card.dart';
+import 'package:ie_montrac/models/transaction.dart';
 
-import '../components/transaction.card.dart';
 import '../theme/app.font.size.dart';
 import '../utils/dimensions.dart';
 
@@ -33,15 +34,20 @@ class GroupedTransactionsSection extends StatelessWidget {
         SizedBox(
           height: Dimensions.getHeight(10),
         ),
-        ListView.builder(
-            itemCount: transactions.length,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (BuildContext ctx, index) {
-              var item = transactions[index];
-              return TransactionCard(item: item);
-            }),
+        if (transactions.isNotEmpty)
+          ListView.builder(
+              itemCount: transactions.length,
+              padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (BuildContext ctx, index) {
+                var item = transactions[index];
+                return TransactionItemCard(transaction: item);
+              }),
+        if (transactions.isEmpty)
+          const Center(
+            child: EmptyStateView(),
+          )
       ],
     );
   }

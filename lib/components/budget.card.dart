@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:ie_montrac/components/svg.icon.dart';
 import 'package:ie_montrac/helper/resources.dart';
+import 'package:ie_montrac/models/budget.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 
 class BudgetCard extends StatelessWidget {
   final Function()? onPress;
-  const BudgetCard({super.key, this.onPress});
+  final Budget budget;
+  final String currency;
+  const BudgetCard(
+      {super.key, this.onPress, required this.budget, required this.currency});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,7 @@ class BudgetCard extends StatelessWidget {
                       Flexible(
                         // Use Flexible instead of Expanded
                         child: Text(
-                          "Shopping",
+                          budget.category,
                           style: AppFontSize.fontSizeMedium(),
                         ),
                       ),
@@ -68,17 +72,20 @@ class BudgetCard extends StatelessWidget {
                 SizedBox(
                   width: Dimensions.getWidth(10),
                 ),
-                const SvgIcon(
-                  path: Resources.warning,
-                  color: AppColors.redColor,
-                ),
+                Visibility(
+                  visible: budget.limitExceeded,
+                  child: const SvgIcon(
+                    path: Resources.warning,
+                    color: AppColors.redColor,
+                  ),
+                )
               ],
             ),
             SizedBox(
               height: Dimensions.getHeight(10),
             ),
             Text(
-              "Remaining \$0",
+              "Remaining $currency ${budget.amount - budget.progressValue}",
               style: AppFontSize.fontSizeTitle(
                 fontWeight: FontWeight.bold,
                 fontSize: Dimensions.getFontSize(24),
@@ -94,7 +101,7 @@ class BudgetCard extends StatelessWidget {
                   Dimensions.getBorderRadius(20),
                 ),
                 child: LinearProgressIndicator(
-                  value: 0.6,
+                  value: budget.progressValue / budget.amount,
                   color: AppColors.orangeColor,
                   backgroundColor: Colors.grey.shade200,
                 ),
@@ -104,7 +111,7 @@ class BudgetCard extends StatelessWidget {
               height: Dimensions.getHeight(10),
             ),
             Text(
-              "\$1200 of \$1000",
+              "$currency ${budget.progressValue} of $currency ${budget.amount}",
               style: AppFontSize.fontSizeMedium(
                 color: AppColors.textGray,
               ),
@@ -112,10 +119,12 @@ class BudgetCard extends StatelessWidget {
             SizedBox(
               height: Dimensions.getHeight(5),
             ),
-            Text(
-              "You've exceeded the limit",
-              style: AppFontSize.fontSizeSmall(color: AppColors.redColor),
-            ),
+            Visibility(
+                visible: budget.limitExceeded,
+                child: Text(
+                  "You've exceeded the limit",
+                  style: AppFontSize.fontSizeSmall(color: AppColors.redColor),
+                )),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:ie_montrac/constants/keys.dart';
 import 'package:ie_montrac/dtos/email.signin.request.dart';
 import 'package:ie_montrac/dtos/email.signup.request.dart';
 import 'package:ie_montrac/dtos/http.request.dto.dart';
+import 'package:ie_montrac/models/currency.dart';
 import 'package:ie_montrac/screens/auth/otp.verify.screen.dart';
 import 'package:ie_montrac/screens/auth/reset.password.screen.dart';
 import 'package:ie_montrac/screens/home/home.screen.dart';
@@ -28,10 +29,53 @@ class AuthController extends GetxController {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController otpController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  Currency? selectedCurrency;
+
   var otpValidity = 0.obs;
+
+  //set currency
+  void setCurrency(Currency currency) {
+    selectedCurrency = currency;
+    update();
+  }
 
   void setOtpValidity(int value) {
     otpValidity.value = value;
+  }
+
+  //update currency
+  Future<void> updateCurrency() async {
+    try {
+      loading = true;
+      await repository.getAuthUser();
+      update();
+      var request = HttpRequestDto("/api/authentication/update-currency",
+          token: authResponse?.token,
+          data: {
+            "code": selectedCurrency?.code,
+            "name": selectedCurrency?.name
+          });
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      var authInfo = AuthResponse.fromJson(res.data);
+      authResponse = authInfo;
+      await repository.saveAuthUser(authInfo);
+      loading = false;
+      update();
+      Get.to(() => const HomeScreen());
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
   }
 
 //handle reset password

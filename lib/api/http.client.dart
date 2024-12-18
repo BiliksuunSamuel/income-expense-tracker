@@ -5,7 +5,7 @@ import '../dtos/http.request.dto.dart';
 class HttpClient extends GetConnect implements GetxService {
   late String appBaseUrl;
 
-  HttpClient({this.appBaseUrl = "http://192.168.0.149:3303"}) {
+  HttpClient({this.appBaseUrl = "http://192.168.0.174:3303"}) {
     timeout = const Duration(seconds: 30);
     baseUrl = appBaseUrl;
   }
