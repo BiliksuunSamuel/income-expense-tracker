@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/budget.controller.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/budget.card.dart';
+import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/primary.button.dart';
 import 'package:ie_montrac/screens/home/budget.create.screen.dart';
@@ -92,24 +93,34 @@ class _BudgetScreenState extends State<BudgetScreen> {
                               child: Column(
                                 children: [
                                   Expanded(
-                                      child: ListView.builder(
-                                          padding: EdgeInsets.zero,
-                                          itemCount: controller.budgets.length,
-                                          itemBuilder:
-                                              (BuildContext ctx, index) {
-                                            var item =
-                                                controller.budgets[index];
-                                            return BudgetCard(
-                                              budget: item,
-                                              currency: controller.authResponse
-                                                      ?.user?.currency ??
-                                                  "",
-                                              onPress: () {
-                                                Get.to(() =>
-                                                    const BudgetDetailsScreen());
-                                              },
-                                            );
-                                          })),
+                                      child: controller.budgets.isEmpty
+                                          ? const Center(
+                                              child: EmptyStateView(
+                                                message:
+                                                    "You current have not budget plans",
+                                              ),
+                                            )
+                                          : ListView.builder(
+                                              padding: EdgeInsets.zero,
+                                              itemCount:
+                                                  controller.budgets.length,
+                                              itemBuilder:
+                                                  (BuildContext ctx, index) {
+                                                var item =
+                                                    controller.budgets[index];
+                                                return BudgetCard(
+                                                  budget: item,
+                                                  currency: controller
+                                                          .authResponse
+                                                          ?.user
+                                                          ?.currency ??
+                                                      "",
+                                                  onPress: () {
+                                                    Get.to(() =>
+                                                        const BudgetDetailsScreen());
+                                                  },
+                                                );
+                                              })),
                                   SizedBox(
                                     height: Dimensions.getHeight(20),
                                   ),
