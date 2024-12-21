@@ -9,6 +9,7 @@ import 'package:ie_montrac/enums/dialog.variants.dart';
 import 'package:ie_montrac/models/auth.response.dart';
 import 'package:ie_montrac/models/budget.category.dart';
 import 'package:ie_montrac/models/budget.dart';
+import 'package:ie_montrac/utils/utilities.dart';
 
 class BudgetController extends GetxController {
   final Repository repository;
@@ -28,6 +29,64 @@ class BudgetController extends GetxController {
   var budgetTitleController = TextEditingController();
   var amountController = TextEditingController();
   BudgetCategory? selectedCategory;
+  Budget? budget;
+  //edit controllers
+  var amountEditController = TextEditingController();
+  var budgetTitleEditController = TextEditingController();
+  BudgetCategory? selectedEditCategory;
+  String? budgetStatus;
+  var statusFilter = RxString("All");
+
+  //set status filter
+  void setStatusFilter(String? status) {
+    statusFilter.value = status!;
+    update();
+  }
+
+  //set selected edit category
+  void setSelectedEditCategory(BudgetCategory? category) {
+    selectedEditCategory = category;
+    update();
+  }
+
+  //get budget status
+  void setBudgetStatus(String? status) {
+    budgetStatus = status;
+    update();
+  }
+
+  //get budget by id
+  Future<void> getBudgetById(String id) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request =
+          HttpRequestDto("/api/budgets/$id", token: authResponse!.token);
+      var response = await repository.getAsync(request);
+      if (!response.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(message: response.message!));
+        return;
+      }
+
+      budget = Budget.fromJson(response.data);
+      amountEditController.text = budget!.amount.toString();
+      budgetTitleEditController.text = budget!.title;
+      budgetStatus = budget!.status;
+      selectedEditCategory = categories
+          .firstWhereOrNull((element) => element.id == budget!.categoryId);
+      loading = false;
+      update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //filter budgets
   Future<void> filterBudgets(int pageIndex) async {
@@ -39,6 +98,7 @@ class BudgetController extends GetxController {
           HttpRequestDto("/api/budgets", token: authResponse!.token, params: {
         "page": "${pageIndex + 1}",
         "pageSize": pageSize.toString(),
+        "status": "All".equals(statusFilter.value) ? null : statusFilter.value
       });
       var response = await repository.getAsync(request);
       if (!response.isSuccessful) {
@@ -69,6 +129,79 @@ class BudgetController extends GetxController {
     }
   }
 
+  //handle delete budget
+  Future<void> deleteBudget(String id) async {
+    try {
+      loading = true;
+      update();
+      await getAuthUser();
+      var request =
+          HttpRequestDto("/api/budgets/$id", token: authResponse!.token);
+      var response = await repository.deleteAsync(request);
+      if (!response.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(message: response.message!));
+        return;
+      }
+      await filterBudgets(0);
+      loading = false;
+      update();
+      Get.dialog(ResponseModal(
+          message: response.message, variant: DialogVariant.Success));
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
+  //handle update budget
+  Future<void> updateBudget(
+      {required bool receiveAlert,
+      required double receiveAlertPercentage}) async {
+    try {
+      loading = true;
+      update();
+      await getAuthUser();
+
+      var data = BudgetRequest(
+              title: budgetTitleEditController.text,
+              description: selectedEditCategory?.description ?? "",
+              category: selectedEditCategory?.title ?? "",
+              amount: amountEditController.text.replaceAll(",", ""),
+              receiveAlert: receiveAlert,
+              receiveAlertPercentage: receiveAlertPercentage,
+              categoryId: selectedEditCategory?.id ?? "",
+              status: budgetStatus)
+          .toJson();
+      var request = HttpRequestDto("/api/budgets/${budget!.id}",
+          data: data, token: authResponse!.token);
+
+      var response = await repository.patchAsync(request);
+      if (!response.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(message: response.message!));
+        return;
+      }
+
+      budget = Budget.fromJson(response.data);
+      loading = false;
+      update();
+      Get.dialog(ResponseModal(
+          message: response.message, variant: DialogVariant.Success));
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
   //handle create budget
   Future<void> createBudget(
       {required bool receiveAlert,
@@ -84,7 +217,9 @@ class BudgetController extends GetxController {
               category: selectedCategory?.title ?? "",
               amount: amountController.text.replaceAll(",", ""),
               receiveAlert: receiveAlert,
-              receiveAlertPercentage: receiveAlertPercentage)
+              receiveAlertPercentage: receiveAlertPercentage,
+              categoryId: selectedCategory?.id ?? "",
+              status: budgetStatus)
           .toJson();
       var request = HttpRequestDto("/api/budgets",
           data: data, token: authResponse!.token);
@@ -144,6 +279,10 @@ class BudgetController extends GetxController {
       await getCategories();
       loading = false;
       update();
+      Get.dialog(ResponseModal(
+        message: response.message,
+        variant: DialogVariant.Success,
+      ));
     } catch (_) {
       loading = false;
       update();
@@ -159,8 +298,10 @@ class BudgetController extends GetxController {
       loading = true;
       update();
       await getAuthUser();
-      var request =
-          HttpRequestDto("/api/budget-categories", token: authResponse!.token);
+      var request = HttpRequestDto(
+        "/api/budget-categories",
+        token: authResponse!.token,
+      );
       var response = await repository.getAsync(request);
       if (!response.isSuccessful) {
         loading = false;
@@ -169,6 +310,10 @@ class BudgetController extends GetxController {
         return;
       }
       categories = BudgetCategory.fromJsonList(response.data);
+      if (budget != null) {
+        selectedEditCategory = categories
+            .firstWhereOrNull((element) => element.id == budget!.categoryId);
+      }
       loading = false;
       update();
     } catch (_) {

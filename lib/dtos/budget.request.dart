@@ -5,6 +5,8 @@ class BudgetRequest {
   final String amount;
   final bool receiveAlert;
   final double receiveAlertPercentage;
+  final String categoryId;
+  final String? status;
   //
   BudgetRequest(
       {required this.title,
@@ -12,7 +14,9 @@ class BudgetRequest {
       required this.category,
       required this.amount,
       required this.receiveAlert,
-      required this.receiveAlertPercentage});
+      required this.receiveAlertPercentage,
+      required this.categoryId,
+      required this.status});
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,7 +25,9 @@ class BudgetRequest {
       'category': category,
       'amount': amount,
       'receiveAlert': receiveAlert,
-      'receiveAlertPercentage': receiveAlertPercentage.toString()
+      'receiveAlertPercentage': receiveAlertPercentage.toString(),
+      'categoryId': categoryId,
+      'status': status
     };
   }
 }

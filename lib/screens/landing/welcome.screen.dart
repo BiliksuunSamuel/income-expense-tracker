@@ -10,6 +10,7 @@ import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/app.view.dart';
 import 'package:ie_montrac/views/content.container.dart';
 
+import '../../api/services/notification.service.dart';
 import '../home/profile/currency.update.screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -20,12 +21,25 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  NotificationServices notificationServices = NotificationServices();
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _handleChecks();
     });
     super.initState();
+    _initFirebaseServices();
+  }
+
+  //
+  void _initFirebaseServices() async {
+    notificationServices.requestNotificationPermissions();
+    notificationServices.foregroundMessage();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessage(context);
+    notificationServices.isRefreshToken();
+    var token = await notificationServices.getDeviceToken();
+    print('Device Token: $token');
   }
 
   //
@@ -53,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: ContentContainer(
         child: Center(
           child: Text(
-            "montra",
+            "IE TRACKER",
             style: AppFontSize.fontSizeTitle(
                 fontSize: Dimensions.getFontSize(56),
                 fontWeight: FontWeight.w700,

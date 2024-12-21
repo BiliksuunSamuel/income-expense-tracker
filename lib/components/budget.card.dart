@@ -5,6 +5,7 @@ import 'package:ie_montrac/models/budget.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
+import 'package:ie_montrac/utils/utilities.dart';
 
 class BudgetCard extends StatelessWidget {
   final Function()? onPress;
@@ -53,7 +54,7 @@ class BudgetCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.circular(Dimensions.getWidth(100)),
-                          color: AppColors.orangeColor,
+                          color: mapCategoryToColor(budget.category),
                         ),
                       ),
                       SizedBox(
@@ -62,7 +63,7 @@ class BudgetCard extends StatelessWidget {
                       Flexible(
                         // Use Flexible instead of Expanded
                         child: Text(
-                          budget.category,
+                          budget.category.trim(),
                           style: AppFontSize.fontSizeMedium(),
                         ),
                       ),
@@ -85,7 +86,7 @@ class BudgetCard extends StatelessWidget {
               height: Dimensions.getHeight(10),
             ),
             Text(
-              "Remaining $currency ${budget.amount - budget.progressValue}",
+              budget.title,
               style: AppFontSize.fontSizeTitle(
                 fontWeight: FontWeight.bold,
                 fontSize: Dimensions.getFontSize(24),
@@ -102,7 +103,7 @@ class BudgetCard extends StatelessWidget {
                 ),
                 child: LinearProgressIndicator(
                   value: budget.progressValue / budget.amount,
-                  color: AppColors.orangeColor,
+                  color: mapCategoryToColor(budget.category),
                   backgroundColor: Colors.grey.shade200,
                 ),
               ),
@@ -110,11 +111,30 @@ class BudgetCard extends StatelessWidget {
             SizedBox(
               height: Dimensions.getHeight(10),
             ),
-            Text(
-              "$currency ${budget.progressValue} of $currency ${budget.amount}",
-              style: AppFontSize.fontSizeMedium(
-                color: AppColors.textGray,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                    child: Text(
+                  "$currency ${budget.progressValue} of $currency ${budget.amount}",
+                  style: AppFontSize.fontSizeMedium(
+                    color: AppColors.textGray,
+                  ),
+                )),
+                Container(
+                  width: Dimensions.getWidth(28),
+                  height: Dimensions.getWidth(28),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("Active".equals(budget.status)
+                          ? Resources.openedImg
+                          : Resources.closedImg),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              ],
             ),
             SizedBox(
               height: Dimensions.getHeight(5),

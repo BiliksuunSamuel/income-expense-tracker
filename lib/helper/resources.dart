@@ -37,4 +37,8 @@ class Resources {
   static const String empty = "assets/images/empty.svg";
   static const String user2 = "assets/images/user2.svg";
   static const String payment = "assets/images/payment.svg";
+  static const String budget = "assets/images/budget.svg";
+  static const String closed = "assets/images/closed.svg";
+  static const String openedImg = "assets/images/opened.png";
+  static const String closedImg = "assets/images/close.png";
 }

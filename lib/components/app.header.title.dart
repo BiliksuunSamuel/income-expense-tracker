@@ -29,7 +29,7 @@ class AppHeaderTitle extends StatelessWidget {
         children: [
           Visibility(
               visible: leftComponent != null,
-              child: leftComponent ?? SizedBox()),
+              child: leftComponent ?? const SizedBox()),
           Visibility(
             visible: leftComponent == null,
             child: IconButton(

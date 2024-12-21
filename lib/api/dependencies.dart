@@ -17,17 +17,18 @@ Future<void> init() async {
   Get.lazyPut(() => AppStore());
 
   // load repositories
-
   Get.lazyPut(() => Repository(
       httpClient: Get.find<HttpClient>(), appStore: Get.find<AppStore>()));
 
   //load controllers
-  Get.lazyPut(() => AuthController(repository: Get.find<Repository>()));
+  Get.put(() => AuthController(repository: Get.find<Repository>()),
+      permanent: true);
   Get.lazyPut(() => ExpenseController(repository: Get.find<Repository>()));
   Get.lazyPut(() => CategoryController(repository: Get.find<Repository>()));
   Get.put(TransactionController(repository: Get.find<Repository>()),
       permanent: true);
   Get.lazyPut(() => IncomeController(repository: Get.find<Repository>()));
-  Get.lazyPut(() => BudgetController(repository: Get.find<Repository>()));
+  Get.put(() => BudgetController(repository: Get.find<Repository>()),
+      permanent: true);
   Get.lazyPut(() => ReportsController(repository: Get.find<Repository>()));
 }

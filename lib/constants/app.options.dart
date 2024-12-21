@@ -11,4 +11,17 @@ class AppOptions {
     "Month",
     "Year"
   ];
+
+  static const List<String> transactionTypes = [
+    "All",
+    "Income",
+    "Expense",
+  ];
+
+  static const List<String> budgetStatuses = [
+    "Active",
+    "Closed",
+  ];
+
+  static const List<String> budgetStatusFilters = ["All", "Active", "Closed"];
 }

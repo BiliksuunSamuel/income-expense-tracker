@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/transaction.item.card.dart';
 import 'package:ie_montrac/models/transaction.dart';
 
+import '../screens/home/transaction.details.screen.dart';
 import '../theme/app.font.size.dart';
 import '../utils/dimensions.dart';
 
@@ -42,7 +44,15 @@ class GroupedTransactionsSection extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (BuildContext ctx, index) {
                 var item = transactions[index];
-                return TransactionItemCard(transaction: item);
+                return TransactionItemCard(
+                    onPress: () {
+                      Get.to(() => const TransactionDetailsScreen(),
+                          arguments: {
+                            "transactionId": item.id,
+                            "transactionType": item.type
+                          });
+                    },
+                    transaction: item);
               }),
         if (transactions.isEmpty)
           const Center(

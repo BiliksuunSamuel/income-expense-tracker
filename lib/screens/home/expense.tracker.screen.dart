@@ -73,14 +73,37 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Container(
-                                width: Dimensions.getWidth(40),
-                                height: Dimensions.getWidth(40),
-                                decoration: BoxDecoration(
-                                    color: AppColors.primaryColor
-                                        .withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(
-                                        Dimensions.getBorderRadius(100))),
-                              ),
+                                  width: Dimensions.getWidth(40),
+                                  height: Dimensions.getWidth(40),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.primaryColor
+                                          .withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(
+                                          Dimensions.getBorderRadius(100)),
+                                      image: controller.authResponse?.user
+                                                  ?.picture !=
+                                              null
+                                          ? DecorationImage(
+                                              image: NetworkImage(controller
+                                                  .authResponse!
+                                                  .user!
+                                                  .picture!),
+                                              fit: BoxFit.cover)
+                                          : null),
+                                  child: controller
+                                              .authResponse!.user!.picture ==
+                                          null
+                                      ? Center(
+                                          child: Text(
+                                              controller.authResponse!.user!
+                                                  .firstName![0]
+                                                  .toUpperCase(),
+                                              style: AppFontSize.fontSizeMedium(
+                                                  color: AppColors.primaryColor,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16)),
+                                        )
+                                      : null),
                               Expanded(
                                   child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

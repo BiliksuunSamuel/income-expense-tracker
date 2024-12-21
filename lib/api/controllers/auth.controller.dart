@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ie_montrac/api/services/notification.service.dart';
 import 'package:ie_montrac/components/response.modal.dart';
 import 'package:ie_montrac/constants/keys.dart';
 import 'package:ie_montrac/dtos/email.signin.request.dart';
@@ -10,12 +11,14 @@ import 'package:ie_montrac/models/currency.dart';
 import 'package:ie_montrac/screens/auth/otp.verify.screen.dart';
 import 'package:ie_montrac/screens/auth/reset.password.screen.dart';
 import 'package:ie_montrac/screens/home/home.screen.dart';
+import 'package:ie_montrac/screens/home/profile/currency.update.screen.dart';
 import 'package:ie_montrac/screens/landing/welcome.screen.dart';
 
 import '../../models/auth.response.dart';
 import '../repositories/repository.dart';
 
 class AuthController extends GetxController {
+  NotificationServices notificationServices = NotificationServices();
   final Repository repository;
   AuthController({required this.repository});
 
@@ -30,8 +33,15 @@ class AuthController extends GetxController {
   TextEditingController otpController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   Currency? selectedCurrency;
+  var pinCodeInputController = TextEditingController();
 
   var otpValidity = 0.obs;
+
+  //clear pin code
+  void clearPinCode() {
+    pinCodeInputController.clear();
+    update();
+  }
 
   //set currency
   void setCurrency(Currency currency) {
@@ -41,6 +51,42 @@ class AuthController extends GetxController {
 
   void setOtpValidity(int value) {
     otpValidity.value = value;
+  }
+
+  Future<void> getAuthUser() async {
+    var res = await repository.getAuthUser();
+    authResponse = res;
+    update();
+  }
+
+  //get profile
+  Future<void> getProfile() async {
+    try {
+      loading = true;
+      update();
+      await getAuthUser();
+      var request = HttpRequestDto("/api/authentication/profile",
+          token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(
+          message: res.message,
+        ));
+      }
+      var authInfo = AuthResponse.fromJson(res.data);
+      authResponse = authInfo;
+      await repository.saveAuthUser(authInfo);
+      loading = false;
+      update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
   }
 
   //update currency
@@ -59,6 +105,10 @@ class AuthController extends GetxController {
       if (!res.isSuccessful) {
         loading = false;
         update();
+        if (res.code == 401) {
+          await repository.removeFromLocalStorage(Keys.User);
+          return Get.to(() => const WelcomeScreen());
+        }
         return Get.dialog(ResponseModal(
           message: res.message,
         ));
@@ -149,10 +199,12 @@ class AuthController extends GetxController {
     try {
       loading = true;
       update();
+      var fcmToken = await notificationServices.getDeviceToken();
       var request = HttpRequestDto("/api/authentication/otp-verify",
           token: authResponse?.token,
           data: {
             "code": otpController.text,
+            "fcmToken": fcmToken,
           });
       var res = await repository.patchAsync(request);
       if (!res.isSuccessful) {
@@ -167,11 +219,14 @@ class AuthController extends GetxController {
       authResponse = authInfo;
       await repository.saveAuthUser(authInfo);
       otpController.clear();
+
       update();
       if (authInfo.user!.resetPassword) {
         return Get.to(() => const ResetPasswordScreen());
       }
-      Get.to(() => const HomeScreen());
+      return authResponse!.user!.currency != null
+          ? Get.to(() => const HomeScreen())
+          : Get.to(() => const CurrencyUpdateScreen());
     } catch (_) {
       loading = false;
       update();
@@ -243,8 +298,20 @@ class AuthController extends GetxController {
       emailController.clear();
       passwordController.clear();
       showPassword = false;
+
       if (authResponse!.user!.authenticated) {
-        return Get.to(() => const HomeScreen());
+        //updating user fcm token
+        var fcmToken = await notificationServices.getDeviceToken();
+        var fcmUpdateRequest = HttpRequestDto("/api/authentication/fcm-token",
+            token: authResponse?.token, data: {"fcmTo;ken": fcmToken});
+        await repository.patchAsync(fcmUpdateRequest);
+        //end of fcm update
+      }
+
+      if (authResponse!.user!.authenticated) {
+        return authResponse!.user!.currency != null
+            ? Get.to(() => const HomeScreen())
+            : Get.to(() => const CurrencyUpdateScreen());
       }
       final expiryTime = authResponse!.user!.otpExpiryTime!;
       final currentTime = DateTime.now();
@@ -292,7 +359,9 @@ class AuthController extends GetxController {
       update();
       update();
       if (authResponse!.user!.authenticated) {
-        return Get.to(() => const HomeScreen());
+        return authResponse!.user!.currency != null
+            ? Get.to(() => const HomeScreen())
+            : Get.to(() => const CurrencyUpdateScreen());
       }
       Get.to(() => const OtpVerifyScreen());
     } catch (_) {
@@ -342,8 +411,9 @@ class AuthController extends GetxController {
       update();
       GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       var googleAuth = await googleUser!.authentication;
+      var fcmToken = await notificationServices.getDeviceToken();
       var httpRequest = HttpRequestDto("/api/authentication/google-auth",
-          data: {"accessToken": googleAuth.accessToken});
+          data: {"accessToken": googleAuth.accessToken, "fcmToken": fcmToken});
       var response = await repository.postAsync(httpRequest);
       if (!response.isSuccessful) {
         loading = false;
@@ -352,9 +422,12 @@ class AuthController extends GetxController {
       var authInfo = AuthResponse.fromJson(response.data);
       authResponse = authInfo;
       await repository.saveAuthUser(authInfo);
+
       loading = false;
       update();
-      Get.to(() => const HomeScreen());
+      return authResponse!.user!.currency != null
+          ? Get.to(() => const HomeScreen())
+          : Get.to(() => const CurrencyUpdateScreen());
     } catch (_) {
       loading = false;
       Get.dialog(const ResponseModal(

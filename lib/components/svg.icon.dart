@@ -7,8 +7,16 @@ class SvgIcon extends StatelessWidget {
   final double? height;
   final Color? color;
   final String path;
+  final bool? applyColor;
+  final Color? contentColor;
   const SvgIcon(
-      {super.key, required this.path, this.height, this.width, this.color});
+      {super.key,
+      required this.path,
+      this.height,
+      this.width,
+      this.color,
+      this.applyColor = true,
+      this.contentColor});
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +24,9 @@ class SvgIcon extends StatelessWidget {
       path,
       width: width ?? Dimensions.getIconSize(22),
       height: height ?? Dimensions.getIconSize(22),
-      colorFilter: ColorFilter.mode(color ?? Colors.white,
-          BlendMode.srcIn), // Optional, if you want to colorize the icon
+      colorFilter: applyColor != null && applyColor!
+          ? ColorFilter.mode(color ?? Colors.white, BlendMode.srcIn)
+          : null, // Optional, if you want to colorize the icon
     );
   }
 }

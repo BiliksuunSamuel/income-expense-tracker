@@ -8,6 +8,8 @@ class Budget {
   final double receiveAlertPercentage;
   final bool limitExceeded;
   final double progressValue;
+  final String? categoryId;
+  final String? status;
 
   Budget(
       {required this.id,
@@ -18,7 +20,9 @@ class Budget {
       required this.receiveAlert,
       required this.receiveAlertPercentage,
       required this.limitExceeded,
-      required this.progressValue});
+      required this.progressValue,
+      this.categoryId,
+      this.status});
 
   factory Budget.fromJson(Map<String, dynamic> json) {
     return Budget(
@@ -30,7 +34,9 @@ class Budget {
         receiveAlert: json['receiveAlert'] ?? false,
         receiveAlertPercentage: json['receiveAlertPercentage']?.toDouble() ?? 0,
         limitExceeded: json['limitExceeded'] ?? false,
-        progressValue: json['progressValue']?.toDouble() ?? 0);
+        progressValue: json['progressValue']?.toDouble() ?? 0,
+        categoryId: json['categoryId'],
+        status: json['status']);
   }
 
   //list

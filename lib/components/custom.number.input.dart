@@ -18,9 +18,10 @@ class CustomNumberInput extends StatelessWidget {
       decoration: InputDecoration(
           contentPadding: EdgeInsets.zero,
           prefixIcon: Padding(
-            padding: EdgeInsets.only(left: Dimensions.getPadding(8)),
+            padding: EdgeInsets.only(
+                left: Dimensions.getPadding(8), top: Dimensions.getHeight(6)),
             child: Text(
-              prefix!,
+              "$prefix ",
               style: AppFontSize.fontSizeTitle(
                   fontWeight: FontWeight.bold,
                   fontSize: Dimensions.getFontSize(32),

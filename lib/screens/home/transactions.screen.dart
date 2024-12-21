@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ie_montrac/api/controllers/category.controller.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
 import 'package:ie_montrac/bottom-sheet/transactions.filter.bottom.sheet.dart';
 import 'package:ie_montrac/components/loader.dart';
@@ -30,6 +31,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   void _loadData() async {
     var controller = Get.find<TransactionController>();
     await Future.wait([controller.getGroupedTransactions()]);
+  }
+
+  void _loadCategories() async {
+    var controller = Get.find<CategoryController>();
+    await Future.wait([controller.getCategories()]);
   }
 
   @override
@@ -82,10 +88,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                         ),
                                         SizedBox(
                                             width: Dimensions.getWidth(2.5)),
-                                        Text(
-                                          "Month",
-                                          style: AppFontSize.fontSizeMedium(),
-                                        ),
+                                        Obx(() => Text(
+                                              controller.transactionType.value,
+                                              style:
+                                                  AppFontSize.fontSizeMedium(),
+                                            )),
                                       ],
                                     ),
                                   ),
@@ -95,7 +102,31 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                     showModalBottomSheet(
                                         context: context,
                                         builder: (BuildContext ctx) {
-                                          return const TransactionsFilterBottomSheet();
+                                          return Obx(() =>
+                                              TransactionsFilterBottomSheet(
+                                                //passing the props no updating in the component
+                                                transactionType: controller
+                                                    .transactionType.value,
+                                                onTransactionTypeChanged:
+                                                    (String type) {
+                                                  controller
+                                                      .setSelectedTransactionType(
+                                                          type);
+                                                },
+                                                onApply: () async {
+                                                  Navigator.pop(ctx);
+                                                  await controller
+                                                      .getGroupedTransactions(
+                                                          type: controller
+                                                                      .transactionType
+                                                                      .value ==
+                                                                  "All"
+                                                              ? null
+                                                              : controller
+                                                                  .transactionType
+                                                                  .value);
+                                                },
+                                              ));
                                         });
                                   },
                                   child: Container(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ie_montrac/api/services/notification.service.dart';
 import 'package:ie_montrac/screens/home/budget.screen.dart';
 import 'package:ie_montrac/screens/home/expense.tracker.screen.dart';
 import 'package:ie_montrac/screens/home/profile/profile.screen.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen>
   int _selectedIndex = 0;
   bool _isMenuOpen = false;
   late AnimationController _animationController;
+  NotificationServices notificationServices = NotificationServices();
   //
   @override
   void initState() {
@@ -31,6 +33,18 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 250),
     );
+    _initFirebaseServices();
+  }
+
+  //
+  void _initFirebaseServices() async {
+    notificationServices.requestNotificationPermissions();
+    notificationServices.foregroundMessage();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessage(context);
+    notificationServices.isRefreshToken();
+    var token = await notificationServices.getDeviceToken();
+    print('Device Token: $token');
   }
   //
 

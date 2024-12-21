@@ -6,6 +6,7 @@ import 'package:ie_montrac/components/budget.card.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/primary.button.dart';
+import 'package:ie_montrac/constants/app.options.dart';
 import 'package:ie_montrac/screens/home/budget.create.screen.dart';
 import 'package:ie_montrac/screens/home/budget.details.screen.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
@@ -20,11 +21,15 @@ class BudgetScreen extends StatefulWidget {
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
+  final ScrollController _scrollController = ScrollController();
+  int _statusFilterIndex = 0;
+  //
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData(0);
+      _scrollController.addListener(_onScroll);
     });
   }
 
@@ -34,39 +39,107 @@ class _BudgetScreenState extends State<BudgetScreen> {
     await controller.filterBudgets(pageIndex);
   }
 
+  void _onScroll() async {
+    // Check if the scroll position has reached the bottom
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      var controller = Get.find<BudgetController>();
+      var page = controller.page;
+      var hasMore =
+          controller.pageSize * controller.page < controller.totalCount;
+      if (!hasMore) return;
+      await controller.filterBudgets(page);
+    }
+  }
+
+  //listen to _statusFilterIndex change
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
         init: BudgetController(repository: Get.find()),
         builder: (controller) {
           return RefreshIndicator(
-              onRefresh: () async {
-                _loadData(0);
-              },
               child: AppView(
                 backgroundColor: AppColors.primaryColor,
                 body: Stack(
                   children: [
                     CustomScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
                       slivers: [
                         SliverAppBar(
                           automaticallyImplyLeading: false,
                           pinned: true,
                           backgroundColor: AppColors.primaryColor,
                           title: AppHeaderTitle(
-                            title: "May",
+                            title: controller.statusFilter.value,
                             titleColor: Colors.white,
                             iconColor: Colors.white,
                             leftComponent: IconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (_statusFilterIndex == 0) {
+                                    setState(() {
+                                      _statusFilterIndex = 2;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[2]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+                                  if (_statusFilterIndex == 2) {
+                                    setState(() {
+                                      _statusFilterIndex = 1;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[1]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+                                  if (_statusFilterIndex == 1) {
+                                    setState(() {
+                                      _statusFilterIndex = 0;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[0]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+                                },
                                 icon: Icon(
                                   Icons.chevron_left,
                                   size: Dimensions.getIconSize(32),
                                   color: Colors.white,
                                 )),
                             rightComponent: IconButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (_statusFilterIndex == 0) {
+                                    setState(() {
+                                      _statusFilterIndex = 1;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[1]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+                                  if (_statusFilterIndex == 1) {
+                                    setState(() {
+                                      _statusFilterIndex = 2;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[2]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+
+                                  if (_statusFilterIndex == 2) {
+                                    setState(() {
+                                      _statusFilterIndex = 0;
+                                    });
+                                    controller.setStatusFilter(
+                                        AppOptions.budgetStatusFilters[0]);
+                                    await controller.filterBudgets(0);
+                                    return;
+                                  }
+                                },
                                 icon: Icon(
                                   Icons.chevron_right,
                                   size: Dimensions.getIconSize(32),
@@ -101,6 +174,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                               ),
                                             )
                                           : ListView.builder(
+                                              controller: _scrollController,
                                               padding: EdgeInsets.zero,
                                               itemCount:
                                                   controller.budgets.length,
@@ -116,8 +190,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
                                                           ?.currency ??
                                                       "",
                                                   onPress: () {
-                                                    Get.to(() =>
-                                                        const BudgetDetailsScreen());
+                                                    Get.to(
+                                                        () =>
+                                                            const BudgetDetailsScreen(),
+                                                        arguments: {
+                                                          "id": item.id
+                                                        });
                                                   },
                                                 );
                                               })),
@@ -146,7 +224,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
                     )
                   ],
                 ),
-              ));
+              ),
+              onRefresh: () async {
+                _loadData(0);
+              });
         });
   }
 }

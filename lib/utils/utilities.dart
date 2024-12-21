@@ -47,9 +47,9 @@ String mapCategoryToIcon(String category) {
       return Resources.payment;
     case "Others":
     case "others":
-      return Resources.uncategorized;
+      return Resources.budget;
     default:
-      return Resources.uncategorized;
+      return Resources.budget;
   }
 }
 
@@ -77,9 +77,9 @@ Color mapCategoryToColor(String category) {
       return AppColors.greenColor;
     case "Others":
     case "others":
-      return AppColors.textGray;
+      return AppColors.primaryColor;
     default:
-      return AppColors.textGray;
+      return AppColors.primaryColor;
   }
 }
 
@@ -171,5 +171,18 @@ extension DateTimeExtension on DateTime {
     return this.year == now.year &&
         this.month == now.month &&
         this.day == now.day;
+  }
+}
+
+//nullable string equality extension
+extension NullableStringEquality on String {
+  bool equals(String? other) {
+    if (this == null && other == null) {
+      return true;
+    }
+    if (this == null || other == null) {
+      return false;
+    }
+    return this == other;
   }
 }

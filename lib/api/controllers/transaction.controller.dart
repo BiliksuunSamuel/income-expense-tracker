@@ -30,8 +30,20 @@ class TransactionController extends GetxController {
   GroupedTransaction groupedTransaction =
       GroupedTransaction(today: [], yesterday: []);
 
+  //filter parameters
+
+  //prop not updating in component UI
+  var transactionType = RxString("All");
+
+  //
+  //set selected transaction type;
+  void setSelectedTransactionType(String type) {
+    transactionType.value = type;
+    update();
+  }
+
   //get grouped transactions
-  Future<void> getGroupedTransactions() async {
+  Future<void> getGroupedTransactions({String? type}) async {
     try {
       loading = true;
       await getAuthUser();
@@ -39,6 +51,9 @@ class TransactionController extends GetxController {
       var request = HttpRequestDto(
         "/api/transactions/grouped",
         token: authResponse?.token,
+        params: {
+          "type": type,
+        },
       );
       var res = await repository.getAsync(request);
       if (!res.isSuccessful) {
