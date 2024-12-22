@@ -30,8 +30,6 @@ class TransactionController extends GetxController {
   GroupedTransaction groupedTransaction =
       GroupedTransaction(today: [], yesterday: []);
 
-  //filter parameters
-
   //prop not updating in component UI
   var transactionType = RxString("All");
 

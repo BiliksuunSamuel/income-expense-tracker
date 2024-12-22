@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/bottom-sheet/action.confirmation.bottom.sheet.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
+import 'package:ie_montrac/components/link.button.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/primary.button.dart';
 import 'package:ie_montrac/components/svg.icon.dart';
@@ -12,6 +13,7 @@ import 'package:ie_montrac/views/app.view.dart';
 import 'package:ie_montrac/views/content.container.dart';
 
 import '../../api/controllers/budget.controller.dart';
+import '../../bottom-sheet/budget.transactions.bottom.sheet.dart';
 import '../../theme/app.colors.dart';
 import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
@@ -322,6 +324,30 @@ class _BudgetDetailsScreenState extends State<BudgetDetailsScreen> {
                                                     ],
                                                   ),
                                                 ),
+                                              ),
+                                              if (controller
+                                                  .budget!.limitExceeded)
+                                                SizedBox(
+                                                  height:
+                                                      Dimensions.getHeight(20),
+                                                ),
+                                              LinkButton(
+                                                title: "View Transactions",
+                                                onPress: () async {
+                                                  await controller
+                                                      .getBudgetTransactions(
+                                                          controller
+                                                              .budget!.id);
+                                                  showModalBottomSheet(
+                                                      context: context,
+                                                      builder:
+                                                          (BuildContext btx) {
+                                                        return BudgetTransactionsBottomSheet(
+                                                          transactions: controller
+                                                              .budgetTransactions,
+                                                        );
+                                                      });
+                                                },
                                               )
                                             ],
                                           ),

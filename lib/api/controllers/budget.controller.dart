@@ -11,6 +11,8 @@ import 'package:ie_montrac/models/budget.category.dart';
 import 'package:ie_montrac/models/budget.dart';
 import 'package:ie_montrac/utils/utilities.dart';
 
+import '../../models/transaction.dart';
+
 class BudgetController extends GetxController {
   final Repository repository;
   BudgetController({required this.repository});
@@ -36,6 +38,7 @@ class BudgetController extends GetxController {
   BudgetCategory? selectedEditCategory;
   String? budgetStatus;
   var statusFilter = RxString("All");
+  List<Transaction> budgetTransactions = [];
 
   //set status filter
   void setStatusFilter(String? status) {
@@ -53,6 +56,35 @@ class BudgetController extends GetxController {
   void setBudgetStatus(String? status) {
     budgetStatus = status;
     update();
+  }
+
+  //get budget transactions
+  Future<void> getBudgetTransactions(String budgetId) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request = HttpRequestDto("/api/transactions/budget/$budgetId",
+          token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+      budgetTransactions = Transaction.fromJsonList(res.data);
+      loading = false;
+      update();
+    } catch (e) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
   }
 
   //get budget by id
