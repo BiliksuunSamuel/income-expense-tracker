@@ -25,14 +25,14 @@ import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
 import '../../utils/utilities.dart';
 
-class AddIncomeScreen extends StatefulWidget {
-  const AddIncomeScreen({super.key});
+class EditIncomeScreen extends StatefulWidget {
+  const EditIncomeScreen({super.key});
 
   @override
-  State<AddIncomeScreen> createState() => _AddIncomeScreenState();
+  State<EditIncomeScreen> createState() => _EditIncomeScreenState();
 }
 
-class _AddIncomeScreenState extends State<AddIncomeScreen> {
+class _EditIncomeScreenState extends State<EditIncomeScreen> {
   bool isRepeatEnabled = false;
   double amount = 0;
   var cameraImage;
@@ -99,13 +99,33 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
   //handle load data
   void _loadData() async {
     var controller = Get.find<CategoryController>();
-    await controller.getCategories();
     var incomeController = Get.find<IncomeController>();
-    incomeController.descriptionController.clear();
-    incomeController.amountController.clear();
-    incomeController.repeatFrequency = null;
-    incomeController.repeatEndDate = DateTime.now();
-    incomeController.repeatTransaction = false;
+
+    var transactionId = Get.arguments["transactionId"];
+
+    await Future.wait([
+      controller.getCategories(),
+      incomeController.getTransactionById(transactionId)
+    ]);
+    //set default values
+    incomeController.descriptionController.text =
+        incomeController.transaction?.description ?? "";
+    incomeController.amountController.text =
+        incomeController.transaction!.amount.toString();
+    var category = controller.categories.firstWhereOrNull(
+        (item) => item.title == incomeController.transaction!.category);
+    if (category != null) {
+      controller.selectedCategory = category;
+    }
+    //
+    if (incomeController.transaction != null) {
+      incomeController.repeatTransaction =
+          incomeController.transaction!.repeatTransaction;
+      incomeController.repeatEndDate =
+          incomeController.transaction!.repeatTransactionEndDate;
+      incomeController.repeatFrequency =
+          incomeController.transaction!.repeatFrequency;
+    }
   }
 
   void _handleSubmit(Category category) async {
@@ -118,7 +138,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         galleryImage?.path.split('/').last ??
         attachment?.name;
 
-    await Get.find<IncomeController>().addTransaction(category,
+    await Get.find<IncomeController>().updateTransaction(category,
         fileData ?? Resources.invoicePlaceholder, fileName, fileExtension);
     //reset fields
     setState(() {
@@ -143,6 +163,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   body: Stack(
                     children: [
                       CustomScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
                         slivers: [
                           const SliverAppBar(
                             pinned: true,
@@ -215,6 +236,8 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                                                     Dimensions.getBorderRadius(
                                                         30)))),
                                         child: ListView(
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(),
                                           padding: EdgeInsets.zero,
                                           children: [
                                             SizedBox(
@@ -461,12 +484,15 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                                               height: Dimensions.getHeight(20),
                                             ),
                                             PrimaryButton(
-                                              title: "Continue",
+                                              title: "Save Changes",
                                               disabled: controller.loading,
                                               onPressed: () {
                                                 _handleSubmit(categoryController
                                                     .selectedCategory!);
                                               },
+                                            ),
+                                            SizedBox(
+                                              height: Dimensions.getHeight(50),
                                             )
                                           ],
                                         ),

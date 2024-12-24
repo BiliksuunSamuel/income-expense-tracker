@@ -19,6 +19,7 @@ class Transaction {
   final String username;
   final String? invoiceFileName;
   final String? invoiceFileType;
+  final String? budgetId;
 
   Transaction({
     required this.id,
@@ -41,6 +42,7 @@ class Transaction {
     required this.username,
     this.invoiceFileName,
     this.invoiceFileType,
+    this.budgetId,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -68,6 +70,7 @@ class Transaction {
       username: json['username'],
       invoiceFileName: json['invoiceFileName'],
       invoiceFileType: json['invoiceFileType'],
+      budgetId: json['budgetId'],
     );
   }
 
@@ -93,6 +96,7 @@ class Transaction {
       'username': username,
       'invoiceFileName': invoiceFileName,
       'invoiceFileType': invoiceFileType,
+      'budgetId': budgetId,
     };
   }
 

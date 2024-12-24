@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/datetime.separator.dart';
+import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/transaction.item.card.dart';
 import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
@@ -116,17 +117,10 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                       }),
                                 )
                               : const ContentContainer(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(height: 16),
-                                      Text(
-                                        'No transaction history',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
+                                  child: Center(
+                                    child: EmptyStateView(
+                                      message: "No Transactions",
+                                    ),
                                   ),
                                 ),
                         )

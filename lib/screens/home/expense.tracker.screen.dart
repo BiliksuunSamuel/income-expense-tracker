@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
-import 'package:ie_montrac/utils/utilities.dart';
 import 'package:ie_montrac/views/app.view.dart';
 
 import '../../chart/spend.frequency.chart.dart';
@@ -109,12 +108,10 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.keyboard_arrow_down,
-                                      color: AppColors.primaryColor),
                                   Text(
-                                    convertMonth(DateTime.now().month),
+                                    "Income - Expense",
                                     style: AppFontSize.fontSizeMedium(
-                                      fontSize: 16,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -130,6 +127,7 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
                         //sliver file remaining
                         SliverFillRemaining(
                           child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             padding: EdgeInsets.zero,
                             children: [
                               IncomeExpenseSummaryView(
@@ -182,6 +180,9 @@ class _ExpenseTrackerScreenState extends State<ExpenseTrackerScreen> {
                               // Recent Transactions
                               RecentTransactionsView(
                                 transactions: controller.recentTransactions,
+                              ),
+                              SizedBox(
+                                height: Dimensions.getHeight(50),
                               )
                             ],
                           ),

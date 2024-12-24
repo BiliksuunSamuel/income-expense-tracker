@@ -9,12 +9,14 @@ class FloatingActionMenuView extends StatelessWidget {
   final bool isVisible;
   final Function()? handleExpensePressed;
   final Function()? handleIncomePressed;
+  final Function()? handleViewTransactionsPressed;
 
   const FloatingActionMenuView(
       {super.key,
       required this.isVisible,
       this.handleExpensePressed,
-      this.handleIncomePressed});
+      this.handleIncomePressed,
+      this.handleViewTransactionsPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,7 @@ class FloatingActionMenuView extends StatelessWidget {
                   right: Dimensions.deviceWidth / 3.25,
                   child: FloatingActionButton(
                       heroTag: "exchange",
-                      onPressed: () {},
+                      onPressed: handleViewTransactionsPressed ?? () {},
                       backgroundColor: AppColors.blueColor,
                       shape: const CircleBorder(),
                       child: const SvgIcon(

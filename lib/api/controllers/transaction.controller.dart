@@ -95,6 +95,12 @@ class TransactionController extends GetxController {
         return;
       }
       chartData = TransactionChartData.fromListJson(res.data);
+      //if the chartData length is less than 2,padd the beginning of the list with a dummy data and end of the list with a dummy data
+      if (chartData.length < 2) {
+        var type = chartData.firstOrNull?.type;
+        chartData.insert(0, TransactionChartData(amount: 0, type: type ?? ""));
+        chartData.add(TransactionChartData(type: type ?? "", amount: 0));
+      }
       loading = false;
       update();
     } catch (e) {
@@ -197,6 +203,7 @@ class TransactionController extends GetxController {
         ));
         return;
       }
+
       transaction = Transaction.fromJson(res.data);
       loading = false;
       update();

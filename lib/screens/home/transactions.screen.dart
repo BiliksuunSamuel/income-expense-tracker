@@ -81,13 +81,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.keyboard_arrow_down,
-                                          color: AppColors.primaryColor,
-                                          size: Dimensions.getIconSize(28),
-                                        ),
-                                        SizedBox(
-                                            width: Dimensions.getWidth(2.5)),
                                         Obx(() => Text(
                                               controller.transactionType.value,
                                               style:

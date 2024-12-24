@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ie_montrac/models/income.expense.report.dart';
+import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/utils/utilities.dart';
 
 import '../theme/app.font.size.dart';
@@ -9,11 +10,13 @@ class IncomeExpenseReportCard extends StatelessWidget {
   final IncomeExpenseReport report;
   final String currency;
   final double totalValue;
+  final bool isIncome;
   const IncomeExpenseReportCard(
       {super.key,
       required this.report,
       required this.currency,
-      required this.totalValue});
+      required this.totalValue,
+      this.isIncome = false});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class IncomeExpenseReportCard extends StatelessWidget {
               Text(
                 '$currency ${report.value.abs().toStringAsFixed(2)}',
                 style: AppFontSize.fontSizeMedium(
-                  color: Colors.red,
+                  color: isIncome ? AppColors.greenColor : AppColors.redColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),

@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
 import 'package:ie_montrac/components/loader.dart';
+import 'package:ie_montrac/screens/home/edit.expense.screen.dart';
+import 'package:ie_montrac/screens/home/edit.income.screen.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/utils/utilities.dart';
 import 'package:ie_montrac/views/app.view.dart';
+
+import '../../components/primary.button.dart';
 
 class TransactionDetailsScreen extends StatefulWidget {
   const TransactionDetailsScreen({Key? key}) : super(key: key);
@@ -199,8 +203,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                       ),
                                     ),
                                     // Type, Category, Wallet section
-                                    Divider(
-                                      color: Colors.grey.withOpacity(0.15),
+
+                                    SizedBox(
+                                      height: Dimensions.getHeight(20),
                                     ),
 
                                     // Description section
@@ -208,9 +213,8 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                       'Description',
                                       style: AppFontSize.fontSizeMedium(
                                           color: Colors.grey,
-                                          fontSize: Dimensions.getFontSize(18)),
+                                          fontSize: Dimensions.getFontSize(16)),
                                     ),
-                                    SizedBox(height: Dimensions.getHeight(10)),
                                     Text(
                                       controller.transaction!.description,
                                       style: AppFontSize.fontSizeMedium(
@@ -250,9 +254,29 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                                     .transaction!.invoiceUrl!),
                                                 fit: BoxFit.cover)),
                                       ),
-                                    // SizedBox(height: Dimensions.getHeight(20)),
+                                    SizedBox(height: Dimensions.getHeight(20)),
                                     // Edit button
-                                    // PrimaryButton(title: "Edit")
+                                    PrimaryButton(
+                                      title: "Edit",
+                                      onPressed: () {
+                                        if ("Income".equals(
+                                            controller.transaction!.type)) {
+                                          Get.to(() => EditIncomeScreen(),
+                                              arguments: {
+                                                "transactionId":
+                                                    controller.transaction!.id,
+                                                "transactionType": "Income"
+                                              });
+                                        } else {
+                                          Get.to(() => EditExpenseScreen(),
+                                              arguments: {
+                                                "transactionId":
+                                                    controller.transaction!.id,
+                                                "transactionType": "Expense"
+                                              });
+                                        }
+                                      },
+                                    )
                                   ],
                                 ),
                               ),

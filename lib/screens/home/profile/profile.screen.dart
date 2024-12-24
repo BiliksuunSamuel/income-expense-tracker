@@ -6,7 +6,6 @@ import 'package:ie_montrac/bottom-sheet/action.confirmation.bottom.sheet.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/profile.menu.item.card.dart';
-import 'package:ie_montrac/components/svg.icon.dart';
 import 'package:ie_montrac/helper/resources.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
@@ -149,12 +148,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         )
                                       ],
                                     )),
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: const SvgIcon(
-                                          path: Resources.pen,
-                                          color: Colors.black,
-                                        ))
+                                    // IconButton(
+                                    //     onPressed: () {},
+                                    //     icon: const SvgIcon(
+                                    //       path: Resources.pen,
+                                    //       color: Colors.black,
+                                    //     ))
                                   ],
                                 ),
                               )),
@@ -179,14 +178,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: ListView(
                                     padding: EdgeInsets.zero,
                                     children: [
-                                      const ProfileMenuItemCard(
-                                          title: "Account",
-                                          iconPath: Resources.wallet,
-                                          color: AppColors.primaryColor),
-                                      const ProfileMenuItemCard(
-                                          title: "Settings",
-                                          iconPath: Resources.settings,
-                                          color: AppColors.primaryColor),
+                                      // const ProfileMenuItemCard(
+                                      //     title: "Account",
+                                      //     iconPath: Resources.wallet,
+                                      //     color: AppColors.primaryColor),
+                                      // const ProfileMenuItemCard(
+                                      //     title: "Settings",
+                                      //     iconPath: Resources.settings,
+                                      //     color: AppColors.primaryColor),
                                       const ProfileMenuItemCard(
                                           title: "Export Data",
                                           iconPath: Resources.upload,

@@ -9,6 +9,7 @@ import 'package:ie_montrac/models/auth.response.dart';
 import '../../components/response.modal.dart';
 import '../../dtos/budget.for.dropdown.dart';
 import '../../models/category.dart';
+import '../../models/transaction.dart';
 import '../../models/transaction.request.dart';
 
 class ExpenseController extends GetxController {
@@ -26,6 +27,38 @@ class ExpenseController extends GetxController {
   AuthResponse? authResponse;
   BudgetForDropdown? selectedBudget;
   List<BudgetForDropdown> budgets = [];
+  Transaction? transaction;
+
+  //get transaction by id
+  Future<void> getTransactionById(String id) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request =
+          HttpRequestDto("/api/transactions/$id", token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+
+      transaction = Transaction.fromJson(res.data);
+      descriptionController.text = transaction?.description ?? "";
+      loading = false;
+      update();
+    } catch (e) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //handle set budget
   void setBudget(BudgetForDropdown budget) {
@@ -53,6 +86,55 @@ class ExpenseController extends GetxController {
       loading = false;
       budgets = BudgetForDropdown.listFromJson(res.data);
       update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
+  //edit transaction
+  Future<void> updateTransaction(Category category, String invoice,
+      invoiceFileName, invoiceFileType) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var data = TransactionRequest(
+              amount: amountController.text.replaceAll(",", ""),
+              description: descriptionController.text,
+              type: TransactionType.Expense.name,
+              category: category.title,
+              account: "Default",
+              currency: authResponse?.user?.currency!,
+              repeatTransaction: repeatTransaction,
+              repeatFrequency: repeatFrequency,
+              repeatInterval: "1",
+              repeatTransactionEndDate: repeatEndDate?.toString(),
+              invoice: invoice,
+              invoiceFileName: invoiceFileName,
+              invoiceFileType: invoiceFileType,
+              budgetId: selectedBudget?.id)
+          .toJson();
+      var request = HttpRequestDto("/api/transactions/${transaction?.id}",
+          token: authResponse?.token, data: data);
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+      loading = false;
+      update();
+      Get.dialog(ResponseModal(
+        message: res.message ?? "Transaction added successfully",
+        variant: DialogVariant.Success,
+      ));
     } catch (_) {
       loading = false;
       update();

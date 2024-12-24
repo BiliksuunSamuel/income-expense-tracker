@@ -19,7 +19,8 @@ class TransactionItemCard extends StatelessWidget {
     var iconColor = mapCategoryToColor(transaction.category);
     var title = transaction.category.toTitleCase();
     var subtitle = transaction.description;
-    var amount = "${transaction.currency} ${transaction.amount}";
+    var amount =
+        "${transaction.currency} ${transaction.amount.toStringAsFixed(2)}";
     var time = transaction.createdAt.toTimeOfDay;
     return InkWell(
       onTap: onPress,

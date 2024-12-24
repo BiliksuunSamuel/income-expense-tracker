@@ -8,42 +8,47 @@ import '../theme/app.colors.dart';
 class FinancialReportChartSwitchCard extends StatelessWidget {
   final int currentIndex;
   final Function(int index) onPress;
-  const FinancialReportChartSwitchCard({super.key,required this.onPress,required this.currentIndex});
+  const FinancialReportChartSwitchCard({
+    super.key,
+    required this.onPress,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
-      margin: EdgeInsets.symmetric(
-          vertical: Dimensions.getMargin(15)),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: Dimensions.getMargin(15)),
       decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              width: Dimensions.getHeight(0.15),
-              color: Colors.grey)),
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          width: Dimensions.getHeight(0.15),
+          color: Colors.grey,
+        ),
+      ),
       child: Row(
         children: [
           InkWell(
             onTap: () {
               onPress(0);
             },
-            child: Container(
-              padding:
-              EdgeInsets.all(Dimensions.getPadding(14)),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+              padding: EdgeInsets.all(Dimensions.getPadding(14)),
               decoration: BoxDecoration(
-                  color: currentIndex == 0
-                      ? AppColors.primaryColor
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(
-                          Dimensions.getBorderRadius(10)),
-                      bottomLeft: Radius.circular(
-                          Dimensions.getBorderRadius(10)))),
+                color: currentIndex == 0
+                    ? AppColors.primaryColor
+                    : Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(Dimensions.getBorderRadius(10)),
+                  bottomLeft: Radius.circular(Dimensions.getBorderRadius(10)),
+                ),
+              ),
               child: SvgIcon(
                 path: Resources.lineChart,
-                color: currentIndex == 0
-                    ? Colors.white
-                    : AppColors.primaryColor,
+                color:
+                    currentIndex == 0 ? Colors.white : AppColors.primaryColor,
                 height: Dimensions.getIconSize(22),
                 width: Dimensions.getIconSize(22),
               ),
@@ -51,30 +56,30 @@ class FinancialReportChartSwitchCard extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-             onPress(1);
+              onPress(1);
             },
-            child: Container(
-              padding:
-              EdgeInsets.all(Dimensions.getPadding(14)),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+              padding: EdgeInsets.all(Dimensions.getPadding(14)),
               decoration: BoxDecoration(
-                  color: currentIndex == 1
-                      ? AppColors.primaryColor
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(
-                          Dimensions.getBorderRadius(10)),
-                      bottomRight: Radius.circular(
-                          Dimensions.getBorderRadius(10)))),
+                color: currentIndex == 1
+                    ? AppColors.primaryColor
+                    : Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(Dimensions.getBorderRadius(10)),
+                  bottomRight: Radius.circular(Dimensions.getBorderRadius(10)),
+                ),
+              ),
               child: SvgIcon(
                 path: Resources.piechart,
-                color: currentIndex == 1
-                    ? Colors.white
-                    : AppColors.primaryColor,
+                color:
+                    currentIndex == 1 ? Colors.white : AppColors.primaryColor,
                 height: Dimensions.getIconSize(24),
                 width: Dimensions.getIconSize(24),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

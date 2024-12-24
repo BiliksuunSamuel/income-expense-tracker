@@ -8,6 +8,7 @@ import '../../enums/dialog.variants.dart';
 import '../../enums/transaction.type.dart';
 import '../../models/auth.response.dart';
 import '../../models/category.dart';
+import '../../models/transaction.dart';
 import '../../models/transaction.request.dart';
 
 class IncomeController extends GetxController {
@@ -23,6 +24,85 @@ class IncomeController extends GetxController {
   String? repeatFrequency;
   DateTime? repeatEndDate = DateTime.now();
   AuthResponse? authResponse;
+  Transaction? transaction;
+
+  //get transaction by id
+  Future<void> getTransactionById(String id) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var request =
+          HttpRequestDto("/api/transactions/$id", token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+
+      transaction = Transaction.fromJson(res.data);
+      loading = false;
+      update();
+    } catch (e) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
+
+  //edit transaction
+  Future<void> updateTransaction(Category category, String invoice,
+      invoiceFileName, invoiceFileType) async {
+    try {
+      loading = true;
+      await getAuthUser();
+      update();
+      var data = TransactionRequest(
+              amount: amountController.text.replaceAll(",", ""),
+              description: descriptionController.text,
+              type: TransactionType.Income.name,
+              category: category.title,
+              account: "Default",
+              currency: authResponse?.user?.currency!,
+              repeatTransaction: repeatTransaction,
+              repeatFrequency: repeatFrequency,
+              repeatInterval: "1",
+              repeatTransactionEndDate: repeatEndDate?.toString(),
+              invoice: invoice,
+              invoiceFileName: invoiceFileName,
+              invoiceFileType: invoiceFileType)
+          .toJson();
+      var request = HttpRequestDto("/api/transactions/${transaction?.id}",
+          token: authResponse?.token, data: data);
+      var res = await repository.patchAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        Get.dialog(ResponseModal(
+          message: res.message ?? "Sorry,an error occurred",
+        ));
+        return;
+      }
+      loading = false;
+      update();
+      Get.dialog(ResponseModal(
+        message: res.message ?? "Transaction added successfully",
+        variant: DialogVariant.Success,
+      ));
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
+  }
 
   //
   //add transaction

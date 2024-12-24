@@ -4,6 +4,7 @@ import 'package:ie_montrac/api/services/notification.service.dart';
 import 'package:ie_montrac/screens/home/budget.screen.dart';
 import 'package:ie_montrac/screens/home/expense.tracker.screen.dart';
 import 'package:ie_montrac/screens/home/profile/profile.screen.dart';
+import 'package:ie_montrac/screens/home/transaction.history.screen.dart';
 import 'package:ie_montrac/screens/home/transactions.screen.dart';
 
 import '../../views/bottom.appbar.view.dart';
@@ -92,6 +93,10 @@ class _HomeScreenState extends State<HomeScreen>
             },
             handleIncomePressed: () {
               Get.to(() => const AddIncomeScreen());
+              _toggleMenu();
+            },
+            handleViewTransactionsPressed: () {
+              Get.to(() => const TransactionHistoryScreen());
               _toggleMenu();
             },
           )

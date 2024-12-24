@@ -26,14 +26,14 @@ import '../../models/category.dart';
 import '../../theme/app.font.size.dart';
 import '../../utils/dimensions.dart';
 
-class AddExpenseScreen extends StatefulWidget {
-  const AddExpenseScreen({super.key});
+class EditExpenseScreen extends StatefulWidget {
+  const EditExpenseScreen({super.key});
 
   @override
-  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+  State<EditExpenseScreen> createState() => _EditExpenseScreenState();
 }
 
-class _AddExpenseScreenState extends State<AddExpenseScreen> {
+class _EditExpenseScreenState extends State<EditExpenseScreen> {
   bool isRepeatEnabled = false;
   double amount = 0;
   var cameraImage;
@@ -101,15 +101,48 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   void _loadData() async {
     var controller = Get.find<CategoryController>();
     var expenseController = Get.find<ExpenseController>();
-    await Future.wait(
-        [controller.getCategories(), expenseController.getBudgets()]);
 
-    //reset fields
-    expenseController.descriptionController.clear();
-    expenseController.amountController.clear();
-    expenseController.repeatFrequency = null;
-    expenseController.repeatEndDate = DateTime.now();
-    expenseController.repeatTransaction = false;
+    //
+    var transactionType = Get.arguments["transactionType"];
+    var transactionId = Get.arguments["transactionId"];
+
+    setState(() {
+      transactionType = transactionType;
+    });
+    //
+
+    await Future.wait([
+      controller.getCategories(),
+      expenseController.getBudgets(),
+      expenseController.getTransactionById(transactionId)
+    ]);
+    //set default values;
+    var budget = expenseController.budgets
+        .where(
+            (item) => item.id.equals(expenseController.transaction!.budgetId))
+        .firstOrNull;
+    if (budget != null) {
+      expenseController.setBudget(budget);
+    }
+
+    var category = controller.categories.firstWhereOrNull(
+        (item) => item.title == expenseController.transaction!.category);
+
+    if (category != null) {
+      controller.selectedCategory = category;
+    }
+
+    expenseController.amountController.text =
+        expenseController.transaction!.amount.toString();
+    //
+    if (expenseController.transaction != null) {
+      expenseController.repeatTransaction =
+          expenseController.transaction!.repeatTransaction;
+      expenseController.repeatFrequency =
+          expenseController.transaction!.repeatFrequency;
+      expenseController.repeatEndDate =
+          expenseController.transaction!.repeatTransactionEndDate;
+    }
   }
 
   void _handleSubmit(Category category) async {
@@ -122,7 +155,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         galleryImage?.path.split('/').last ??
         attachment?.name;
 
-    await Get.find<ExpenseController>().addTransaction(category,
+    await Get.find<ExpenseController>().updateTransaction(category,
         fileData ?? Resources.invoicePlaceholder, fileName, fileExtension);
     //reset fields
     setState(() {
@@ -147,13 +180,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   body: Stack(
                     children: [
                       CustomScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
                         slivers: [
                           const SliverAppBar(
                             pinned: true,
                             automaticallyImplyLeading: false,
                             backgroundColor: AppColors.redColor,
                             title: AppHeaderTitle(
-                              title: "Expense",
+                              title: "Edit Transaction",
                               titleColor: Colors.white,
                               iconColor: Colors.white,
                             ),
@@ -220,6 +254,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                                       30)))),
                                       child: ListView(
                                         padding: EdgeInsets.zero,
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
                                         children: [
                                           SizedBox(
                                             height: Dimensions.getHeight(20),
@@ -478,13 +514,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                             height: Dimensions.getHeight(20),
                                           ),
                                           PrimaryButton(
-                                            title: "Continue",
+                                            title: "Save Changes",
                                             disabled: controller.loading,
                                             onPressed: () {
                                               _handleSubmit(categoryController
                                                   .selectedCategory!);
                                             },
-                                          )
+                                          ),
+                                          SizedBox(
+                                              height: Dimensions.getHeight(50)),
                                         ],
                                       ),
                                     ),

@@ -5,6 +5,7 @@ import 'package:ie_montrac/bottom-sheet/financial.report.filter.bottom.sheet.dar
 import 'package:ie_montrac/chart/financial.report.line.chart.dart';
 import 'package:ie_montrac/chart/transaction.report.doughnut.chart.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
+import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/financial.report.chart.switch.card.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/theme/app.font.size.dart';
@@ -97,33 +98,7 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.symmetric(
-                                          vertical: Dimensions.getMargin(15)),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: Dimensions.getPadding(16),
-                                        vertical: Dimensions.getPadding(8),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[100],
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.keyboard_arrow_down,
-                                            size: Dimensions.getIconSize(24),
-                                          ),
-                                          Text(
-                                            'Chart',
-                                            style: AppFontSize.fontSizeMedium(),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    //financial report chart switch section
+                                    const Spacer(), //financial report chart switch section
                                     FinancialReportChartSwitchCard(
                                         onPress: (int switchIndex) {
                                           setState(() {
@@ -153,14 +128,22 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                                 ),
                                 // Graph
                                 Visibility(
-                                    visible: chartIndex == 0,
+                                    visible: chartIndex == 0 &&
+                                        (controller.reports.incomeReport
+                                                .isNotEmpty ||
+                                            controller.reports.expenseReport
+                                                .isNotEmpty),
                                     child: FinancialReportLineChart(
                                       data: selectedIndex == 0
                                           ? controller.reports.expenseReport
                                           : controller.reports.incomeReport,
                                     )),
                                 Visibility(
-                                    visible: chartIndex == 1,
+                                    visible: chartIndex == 1 &&
+                                        (controller.reports.incomeReport
+                                                .isNotEmpty ||
+                                            controller.reports.expenseReport
+                                                .isNotEmpty),
                                     child: Center(
                                       child: TransactionReportDoughnutChart(
                                         totalAmount: selectedIndex == 0
@@ -205,7 +188,10 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                                               selectedIndex = 0;
                                             });
                                           },
-                                          child: Container(
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
                                             padding: EdgeInsets.symmetric(
                                                 vertical:
                                                     Dimensions.getPadding(12)),
@@ -236,7 +222,10 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                                               selectedIndex = 1;
                                             });
                                           },
-                                          child: Container(
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeInOut,
                                             padding: EdgeInsets.symmetric(
                                                 vertical:
                                                     Dimensions.getPadding(12)),
@@ -278,30 +267,51 @@ class _FinancialReportScreenState extends State<FinancialReportScreen> {
                                 //Transaction category summary view
                                 SizedBox(
                                   height: Dimensions.getHeight(300),
-                                  child: ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      itemCount: selectedIndex == 0
-                                          ? controller
-                                              .reports.expenseReport.length
-                                          : controller
-                                              .reports.incomeReport.length,
-                                      itemBuilder: (BuildContext btx, index) {
-                                        var item = selectedIndex == 0
-                                            ? controller
-                                                .reports.expenseReport[index]
-                                            : controller
-                                                .reports.incomeReport[index];
-                                        return IncomeExpenseReportCard(
-                                            report: item,
-                                            totalValue:
-                                                controller.reports.totalExpense,
-                                            currency: controller.authResponse
-                                                    ?.user?.currency ??
-                                                "");
-                                      }),
+                                  child: (selectedIndex == 0 &&
+                                          controller
+                                              .reports.expenseReport.isEmpty)
+                                      ? Center(
+                                          child: EmptyStateView(
+                                            message: "No data available",
+                                          ),
+                                        )
+                                      : (selectedIndex == 1 &&
+                                              controller
+                                                  .reports.incomeReport.isEmpty)
+                                          ? Center(
+                                              child: EmptyStateView(
+                                                message: "No data available",
+                                              ),
+                                            )
+                                          : ListView.builder(
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              itemCount: selectedIndex == 0
+                                                  ? controller.reports
+                                                      .expenseReport.length
+                                                  : controller.reports
+                                                      .incomeReport.length,
+                                              itemBuilder:
+                                                  (BuildContext btx, index) {
+                                                var item = selectedIndex == 0
+                                                    ? controller.reports
+                                                        .expenseReport[index]
+                                                    : controller.reports
+                                                        .incomeReport[index];
+                                                return IncomeExpenseReportCard(
+                                                    report: item,
+                                                    isIncome:
+                                                        selectedIndex == 1,
+                                                    totalValue: controller
+                                                        .reports.totalExpense,
+                                                    currency: controller
+                                                            .authResponse
+                                                            ?.user
+                                                            ?.currency ??
+                                                        "");
+                                              }),
                                 )
                               ],
                             ),
