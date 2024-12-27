@@ -21,6 +21,7 @@ import 'package:ie_montrac/views/app.view.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../api/controllers/category.controller.dart';
+import '../../components/link.button.dart';
 import '../../dtos/budget.for.dropdown.dart';
 import '../../models/category.dart';
 import '../../theme/app.font.size.dart';
@@ -112,7 +113,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     expenseController.repeatTransaction = false;
   }
 
-  void _handleSubmit(Category category) async {
+  void _handleSubmit(Category? category) async {
     //extract file extension from cameraImage,galleryImage,attachment
     var fileExtension = cameraImage?.path.split('.').last ??
         galleryImage?.path.split('.').last ??
@@ -122,8 +123,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         galleryImage?.path.split('/').last ??
         attachment?.name;
 
-    await Get.find<ExpenseController>().addTransaction(category,
-        fileData ?? Resources.invoicePlaceholder, fileName, fileExtension);
+    var categoryController = Get.find<CategoryController>();
+    await Get.find<ExpenseController>().addTransaction(
+        category,
+        fileData ?? Resources.invoicePlaceholder,
+        fileName,
+        fileExtension, () async {
+      await categoryController.getCategories();
+    });
     //reset fields
     setState(() {
       cameraImage = null;
@@ -147,6 +154,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   body: Stack(
                     children: [
                       CustomScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
                         slivers: [
                           const SliverAppBar(
                             pinned: true,
@@ -222,23 +230,60 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                         padding: EdgeInsets.zero,
                                         children: [
                                           SizedBox(
+                                            height: Dimensions.getHeight(10),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text("Add Category",
+                                                  style:
+                                                      AppFontSize.fontSizeSmall(
+                                                          color: AppColors
+                                                              .textGray)),
+                                              LinkButton(
+                                                fontSize:
+                                                    Dimensions.getFontSize(16),
+                                                title: controller.isAddCategory
+                                                    ? "Choose Category"
+                                                    : "Create +",
+                                                decoration: TextDecoration.none,
+                                                onPress: () {
+                                                  controller.setIsAddCategory(
+                                                      !controller
+                                                          .isAddCategory);
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(
                                             height: Dimensions.getHeight(20),
                                           ),
-                                          CustomDropdown(
-                                            hintText: "Category",
-                                            label: "Select Category",
-                                            selectedValue: categoryController
-                                                .selectedCategory,
-                                            items:
-                                                categoryController.categories,
-                                            itemLabel: (Category item) {
-                                              return item.title;
-                                            },
-                                            onChanged: (Category? val) {
-                                              categoryController
-                                                  .selectedCategory = val;
-                                            },
-                                          ),
+                                          if (controller.isAddCategory)
+                                            CustomInput(
+                                              hintText: "Category",
+                                              label: "Category",
+                                              controller:
+                                                  controller.categoryController,
+                                            ),
+                                          if (!controller.isAddCategory)
+                                            CustomDropdown(
+                                              hintText: "Category",
+                                              label: "Select Category",
+                                              selectedValue: categoryController
+                                                  .selectedCategory,
+                                              items:
+                                                  categoryController.categories,
+                                              itemLabel: (Category item) {
+                                                return item.title;
+                                              },
+                                              onChanged: (Category? val) {
+                                                categoryController
+                                                    .selectedCategory = val;
+                                              },
+                                            ),
                                           SizedBox(
                                             height: Dimensions.getHeight(20),
                                           ),
@@ -395,7 +440,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                                   prefixIcon: Container(
                                                     margin: EdgeInsets.only(
                                                         top: Dimensions
-                                                            .getHeight(12),
+                                                            .getHeight(8),
                                                         left:
                                                             Dimensions.getWidth(
                                                                 10),
@@ -482,8 +527,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                             disabled: controller.loading,
                                             onPressed: () {
                                               _handleSubmit(categoryController
-                                                  .selectedCategory!);
+                                                  .selectedCategory);
                                             },
+                                          ),
+                                          SizedBox(
+                                            height: Dimensions.getHeight(50),
                                           )
                                         ],
                                       ),

@@ -17,6 +17,7 @@ import '../../bottom-sheet/file.picker.bottom.sheet.dart';
 import '../../components/custom.number.input.dart';
 import '../../components/custom.switch.button.dart';
 import '../../components/file.picker.button.dart';
+import '../../components/link.button.dart';
 import '../../components/transaction.document.card.dart';
 import '../../components/transaction.invoice.image.dart';
 import '../../constants/app.options.dart';
@@ -108,7 +109,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
     incomeController.repeatTransaction = false;
   }
 
-  void _handleSubmit(Category category) async {
+  void _handleSubmit(Category? category) async {
     //extract file extension from cameraImage,galleryImage,attachment
     var fileExtension = cameraImage?.path.split('.').last ??
         galleryImage?.path.split('.').last ??
@@ -118,8 +119,13 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         galleryImage?.path.split('/').last ??
         attachment?.name;
 
-    await Get.find<IncomeController>().addTransaction(category,
-        fileData ?? Resources.invoicePlaceholder, fileName, fileExtension);
+    await Get.find<IncomeController>().addTransaction(
+        category,
+        fileData ?? Resources.invoicePlaceholder,
+        fileName,
+        fileExtension, () async {
+      await Get.find<CategoryController>().getCategories();
+    });
     //reset fields
     setState(() {
       cameraImage = null;
@@ -143,6 +149,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                   body: Stack(
                     children: [
                       CustomScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
                         slivers: [
                           const SliverAppBar(
                             pinned: true,
@@ -217,6 +224,39 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                                         child: ListView(
                                           padding: EdgeInsets.zero,
                                           children: [
+                                            SizedBox(
+                                              height: Dimensions.getHeight(10),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text("Add Category",
+                                                    style: AppFontSize
+                                                        .fontSizeSmall(
+                                                            color: AppColors
+                                                                .textGray)),
+                                                LinkButton(
+                                                  fontSize:
+                                                      Dimensions.getFontSize(
+                                                          16),
+                                                  title:
+                                                      controller.isAddCategory
+                                                          ? "Choose Category"
+                                                          : "Create +",
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                  onPress: () {
+                                                    controller.setIsAddCategory(
+                                                        !controller
+                                                            .isAddCategory);
+                                                  },
+                                                )
+                                              ],
+                                            ),
                                             SizedBox(
                                               height: Dimensions.getHeight(20),
                                             ),
@@ -379,7 +419,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                                                     prefixIcon: Container(
                                                       margin: EdgeInsets.only(
                                                           top: Dimensions
-                                                              .getHeight(12),
+                                                              .getHeight(8),
                                                           left: Dimensions
                                                               .getWidth(10),
                                                           right: Dimensions
@@ -465,7 +505,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                                               disabled: controller.loading,
                                               onPressed: () {
                                                 _handleSubmit(categoryController
-                                                    .selectedCategory!);
+                                                    .selectedCategory);
                                               },
                                             )
                                           ],

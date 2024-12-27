@@ -10,13 +10,15 @@ class LinkButton extends StatelessWidget {
   final Color? color;
   final TextDecoration? decoration;
   final FontWeight? fontWeight;
+  final double? fontSize;
   const LinkButton(
       {super.key,
       this.title,
       this.decoration,
       this.onPress,
       this.color,
-      this.fontWeight});
+      this.fontWeight,
+      this.fontSize});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,8 @@ class LinkButton extends StatelessWidget {
               title ?? "click me",
               style: AppFontSize.fontSizeMedium(
                       color: color ?? AppColors.primaryColor,
-                      fontWeight: fontWeight ?? FontWeight.w600)
+                      fontWeight: fontWeight ?? FontWeight.w600,
+                      fontSize: fontSize ?? Dimensions.getFontSize(18))
                   .copyWith(
                       decorationColor: color ?? AppColors.primaryColor,
                       decorationThickness: Dimensions.getHeight(2)),

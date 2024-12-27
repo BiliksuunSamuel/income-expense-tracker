@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
+import 'package:ie_montrac/bottom-sheet/transaction.history.filter.bottom.sheet.dart';
 import 'package:ie_montrac/components/app.header.title.dart';
 import 'package:ie_montrac/components/datetime.separator.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
@@ -10,6 +11,8 @@ import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/app.view.dart';
 import 'package:ie_montrac/views/content.container.dart';
+
+import '../../models/category.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({super.key});
@@ -36,7 +39,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
     final controller = Get.find<TransactionController>();
     await Future.wait([
       controller.getAuthUser(),
-      controller.getAllTransactions(pageIndex: pageIndex)
+      controller.getAllTransactions(pageIndex: pageIndex),
+      controller.getCategories()
     ]);
   }
 
@@ -68,13 +72,56 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   children: [
                     CustomScrollView(
                       slivers: [
-                        const SliverAppBar(
-                            pinned: true,
-                            backgroundColor: Colors.white,
-                            automaticallyImplyLeading: false,
-                            title: AppHeaderTitle(
-                              title: "Transaction History",
-                            )),
+                        SliverAppBar(
+                          pinned: true,
+                          backgroundColor: Colors.white,
+                          automaticallyImplyLeading: false,
+                          title: AppHeaderTitle(
+                            title: "Transaction History",
+                            rightComponent: IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext btx) {
+                                        return Obx(() =>
+                                            TransactionHistoryFilterBottomSheet(
+                                              onCategoryChanged:
+                                                  (Category? cate) {
+                                                controller
+                                                    .setSelectedCategory(cate);
+                                              },
+                                              startDateController: controller
+                                                  .startDateController,
+                                              endDateController:
+                                                  controller.endDateController,
+                                              selectedCategory:
+                                                  controller.selectedCategory,
+                                              categories: controller.categories,
+                                              transactionType: controller
+                                                  .transactionType.value,
+                                              onTransactionTypeChanged:
+                                                  (String val) {
+                                                controller
+                                                    .setSelectedTransactionType(
+                                                        val);
+                                              },
+                                              resetFilter: () {
+                                                Navigator.pop(btx);
+                                                controller.resetFilter();
+                                              },
+                                              onApply: () async {
+                                                Navigator.pop(btx);
+                                                await controller.applyFilter();
+                                              },
+                                            ));
+                                      });
+                                },
+                                icon: Icon(
+                                  Icons.filter_list_outlined,
+                                  size: Dimensions.getIconSize(24),
+                                )),
+                          ),
+                        ),
                         SliverFillRemaining(
                           child: controller.allTransactions.isNotEmpty
                               ? ContentContainer(

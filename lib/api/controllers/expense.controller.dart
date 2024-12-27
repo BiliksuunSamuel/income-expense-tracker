@@ -28,6 +28,14 @@ class ExpenseController extends GetxController {
   BudgetForDropdown? selectedBudget;
   List<BudgetForDropdown> budgets = [];
   Transaction? transaction;
+  bool isAddCategory = false;
+  var categoryController = TextEditingController();
+
+  //set is add category
+  void setIsAddCategory(bool value) {
+    isAddCategory = value;
+    update();
+  }
 
   //get transaction by id
   Future<void> getTransactionById(String id) async {
@@ -145,8 +153,12 @@ class ExpenseController extends GetxController {
   }
 
   //add transaction
-  Future<void> addTransaction(Category category, String invoice,
-      invoiceFileName, invoiceFileType) async {
+  Future<void> addTransaction(
+      Category? category,
+      String invoice,
+      invoiceFileName,
+      invoiceFileType,
+      Future<void> Function() refreshCategory) async {
     try {
       loading = true;
       await getAuthUser();
@@ -155,7 +167,7 @@ class ExpenseController extends GetxController {
           amount: amountController.text.replaceAll(",", ""),
           description: descriptionController.text,
           type: TransactionType.Expense.name,
-          category: category.title,
+          category: category?.title ?? categoryController.text,
           account: "Default",
           currency: authResponse?.user?.currency!,
           repeatTransaction: repeatTransaction,
@@ -183,6 +195,9 @@ class ExpenseController extends GetxController {
       repeatFrequency = null;
       repeatEndDate = DateTime.now();
       repeatTransaction = false;
+      categoryController.clear();
+      isAddCategory = false;
+      await refreshCategory();
       update();
       Get.dialog(ResponseModal(
         message: res.message ?? "Transaction added successfully",

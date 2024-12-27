@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/components/response.modal.dart';
 import 'package:ie_montrac/models/auth.response.dart';
+import 'package:ie_montrac/models/category.dart';
 import 'package:ie_montrac/models/grouped.transaction.dart';
 import 'package:ie_montrac/models/transaction.chart.data.dart';
 import 'package:ie_montrac/models/transaction.summary.dart';
+import 'package:ie_montrac/utils/utilities.dart';
 
 import '../../dtos/http.request.dto.dart';
 import '../../dtos/paged.results.dto.dart';
@@ -29,6 +32,16 @@ class TransactionController extends GetxController {
   List<TransactionChartData> chartData = [];
   GroupedTransaction groupedTransaction =
       GroupedTransaction(today: [], yesterday: []);
+  Category? selectedCategory;
+  var startDateController = TextEditingController();
+  var endDateController = TextEditingController();
+  List<Category> categories = [];
+
+  //set selected Category
+  void setSelectedCategory(Category? category) {
+    selectedCategory = category;
+    update();
+  }
 
   //prop not updating in component UI
   var transactionType = RxString("All");
@@ -38,6 +51,45 @@ class TransactionController extends GetxController {
   void setSelectedTransactionType(String type) {
     transactionType.value = type;
     update();
+  }
+
+  void resetFilter() async {
+    transactionType.value = "All";
+    selectedCategory = null;
+    startDateController.clear();
+    endDateController.clear();
+    update();
+    await getAllTransactions(pageIndex: 0);
+  }
+
+  Future<void> applyFilter() async {
+    await getAllTransactions(pageIndex: 0);
+  }
+
+  //get categories
+  Future<void> getCategories() async {
+    try {
+      loading = true;
+      update();
+      await getAuthUser();
+      var request =
+          HttpRequestDto("/api/categories", token: authResponse?.token);
+      var res = await repository.getAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(message: res.message));
+      }
+      categories = Category.fromJsonList(res.data);
+      loading = false;
+      update();
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
   }
 
   //get grouped transactions
@@ -123,6 +175,12 @@ class TransactionController extends GetxController {
           params: {
             "page": "${pageIndex + 1}",
             "pageSize": pageSize.toString(),
+            "startDate": startDateController.text,
+            "endDate": endDateController.text,
+            "category": selectedCategory?.title,
+            "type": transactionType.value.equals("All")
+                ? null
+                : transactionType.value,
           });
       var res = await repository.getAsync(request);
       if (!res.isSuccessful) {
