@@ -123,9 +123,12 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         category,
         fileData ?? Resources.invoicePlaceholder,
         fileName,
-        fileExtension, () async {
-      await Get.find<CategoryController>().getCategories();
-    });
+        fileExtension,
+        category != null
+            ? null
+            : () async {
+                await Get.find<CategoryController>().getCategories();
+              });
     //reset fields
     setState(() {
       cameraImage = null;

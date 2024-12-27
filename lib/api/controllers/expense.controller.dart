@@ -158,7 +158,7 @@ class ExpenseController extends GetxController {
       String invoice,
       invoiceFileName,
       invoiceFileType,
-      Future<void> Function() refreshCategory) async {
+      Future<void> Function()? refreshCategory) async {
     try {
       loading = true;
       await getAuthUser();
@@ -197,8 +197,10 @@ class ExpenseController extends GetxController {
       repeatTransaction = false;
       categoryController.clear();
       isAddCategory = false;
-      await refreshCategory();
       update();
+      if (refreshCategory != null) {
+        await refreshCategory();
+      }
       Get.dialog(ResponseModal(
         message: res.message ?? "Transaction added successfully",
         variant: DialogVariant.Success,

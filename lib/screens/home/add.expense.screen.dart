@@ -128,9 +128,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         category,
         fileData ?? Resources.invoicePlaceholder,
         fileName,
-        fileExtension, () async {
-      await categoryController.getCategories();
-    });
+        fileExtension,
+        category != null
+            ? null
+            : () async {
+                await categoryController.getCategories();
+              });
     //reset fields
     setState(() {
       cameraImage = null;
