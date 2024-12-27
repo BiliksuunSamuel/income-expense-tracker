@@ -19,7 +19,7 @@ class CustomNumberInput extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           prefixIcon: Padding(
             padding: EdgeInsets.only(
-                left: Dimensions.getPadding(8), top: Dimensions.getHeight(6)),
+                left: Dimensions.getPadding(8), top: Dimensions.getHeight(4)),
             child: Text(
               "$prefix ",
               style: AppFontSize.fontSizeTitle(

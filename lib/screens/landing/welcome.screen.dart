@@ -50,13 +50,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       if (authUser != null) {
         if (authUser.user!.authenticated) {
           if (authUser.user!.currency == null) {
-            return Get.to(() => const CurrencyUpdateScreen());
+            return Get.offAll(() => const CurrencyUpdateScreen());
           }
-          return Get.to(() => const HomeScreen());
+          return Get.offAll(() => const HomeScreen());
         }
-        Get.to(() => const OtpVerifyScreen());
+        Get.offAll(() => const OtpVerifyScreen());
       }
-      Get.to(() => const AuthScreen());
+      Get.off(() => const AuthScreen());
     });
   }
 

@@ -88,7 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   PrimaryButton(
                     title: "Sign Up",
                     onPressed: () {
-                      Get.to(() => const RegisterScreen());
+                      Get.offAll(() => const RegisterScreen());
                     },
                   ),
                   SizedBox(height: Dimensions.getHeight(15)),
@@ -97,7 +97,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     bgcolor: AppColors.primaryColor.withOpacity(0.15),
                     textColor: AppColors.primaryColor,
                     onPressed: () {
-                      Get.to(() => const LoginScreen());
+                      Get.offAll(() => const LoginScreen());
                     },
                   ),
                 ],

@@ -49,6 +49,7 @@ dependencies:
   custom_pin_screen: ^1.0.1
   firebase_messaging: ^15.1.6
   flutter_local_notifications:
+  socket_io_client: ^3.0.2
 
 
 dev_dependencies:

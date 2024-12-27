@@ -1,14 +1,12 @@
 import 'package:get/get.dart';
+import 'package:ie_montrac/configuration/app.configuration.dart';
 
 import '../dtos/http.request.dto.dart';
 
 class HttpClient extends GetConnect implements GetxService {
-  late String appBaseUrl;
+  var appBaseUrl = AppConfiguration.baseUrl;
 
-  static const bool prod = false;
-  static const String prodUrl = "https://plankton-app-jznh9.ondigitalocean.app";
-  static const String localUrl = "http://192.168.0.180:3303";
-  HttpClient({this.appBaseUrl = prod ? prodUrl : localUrl}) {
+  HttpClient() {
     timeout = const Duration(seconds: 30);
     baseUrl = appBaseUrl;
   }

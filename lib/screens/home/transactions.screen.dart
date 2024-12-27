@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/category.controller.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
+import 'package:ie_montrac/api/services/events.service.dart';
 import 'package:ie_montrac/bottom-sheet/transactions.filter.bottom.sheet.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/screens/home/financial.report.screen.dart';
@@ -24,6 +26,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
+      if (kDebugMode) {
+        print("Connected socketId: ${EventsService.socket.id}");
+      }
     });
     super.initState();
   }

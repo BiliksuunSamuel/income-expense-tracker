@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ie_montrac/api/services/events.service.dart';
 import 'package:ie_montrac/api/services/notification.service.dart';
 import 'package:ie_montrac/components/response.modal.dart';
 import 'package:ie_montrac/constants/keys.dart';
@@ -107,7 +108,7 @@ class AuthController extends GetxController {
         update();
         if (res.code == 401) {
           await repository.removeFromLocalStorage(Keys.User);
-          return Get.to(() => const WelcomeScreen());
+          return Get.offAll(() => const WelcomeScreen());
         }
         return Get.dialog(ResponseModal(
           message: res.message,
@@ -118,7 +119,7 @@ class AuthController extends GetxController {
       await repository.saveAuthUser(authInfo);
       loading = false;
       update();
-      Get.to(() => const HomeScreen());
+      Get.offAll(() => const HomeScreen());
     } catch (_) {
       loading = false;
       update();
@@ -153,7 +154,7 @@ class AuthController extends GetxController {
       var authInfo = AuthResponse.fromJson(res.data);
       await repository.saveAuthUser(authInfo);
       update();
-      Get.to(() => const HomeScreen());
+      Get.offAll(() => const HomeScreen());
     } catch (_) {
       loading = false;
       update();
@@ -184,7 +185,7 @@ class AuthController extends GetxController {
       loading = false;
       emailController.clear();
       update();
-      Get.to(() => const OtpVerifyScreen());
+      Get.offAll(() => const OtpVerifyScreen());
     } catch (_) {
       loading = false;
       update();
@@ -222,11 +223,16 @@ class AuthController extends GetxController {
 
       update();
       if (authInfo.user!.resetPassword) {
-        return Get.to(() => const ResetPasswordScreen());
+        return Get.offAll(() => const ResetPasswordScreen());
+      }
+
+      if (authResponse?.user != null) {
+        EventsService.signInEvent(
+            authResponse!.user!.id!, authResponse!.user!.tokenId!);
       }
       return authResponse!.user!.currency != null
-          ? Get.to(() => const HomeScreen())
-          : Get.to(() => const CurrencyUpdateScreen());
+          ? Get.offAll(() => const HomeScreen())
+          : Get.offAll(() => const CurrencyUpdateScreen());
     } catch (_) {
       loading = false;
       update();
@@ -309,16 +315,20 @@ class AuthController extends GetxController {
       }
 
       if (authResponse!.user!.authenticated) {
+        if (authResponse?.user != null) {
+          EventsService.signInEvent(
+              authResponse!.user!.id!, authResponse!.user!.tokenId!);
+        }
         return authResponse!.user!.currency != null
-            ? Get.to(() => const HomeScreen())
-            : Get.to(() => const CurrencyUpdateScreen());
+            ? Get.offAll(() => const HomeScreen())
+            : Get.offAll(() => const CurrencyUpdateScreen());
       }
       final expiryTime = authResponse!.user!.otpExpiryTime!;
       final currentTime = DateTime.now();
       final difference = expiryTime.difference(currentTime).inSeconds;
       otpValidity.value = difference > 0 ? difference : 0;
       update();
-      Get.to(() => const OtpVerifyScreen());
+      Get.offAll(() => const OtpVerifyScreen());
     } catch (_) {
       loading = false;
       update();
@@ -357,11 +367,14 @@ class AuthController extends GetxController {
       passwordController.clear();
       showPassword = false;
       update();
-      update();
       if (authResponse!.user!.authenticated) {
+        if (authResponse?.user != null) {
+          EventsService.signInEvent(
+              authResponse!.user!.id!, authResponse!.user!.tokenId!);
+        }
         return authResponse!.user!.currency != null
-            ? Get.to(() => const HomeScreen())
-            : Get.to(() => const CurrencyUpdateScreen());
+            ? Get.offAll(() => const HomeScreen())
+            : Get.offAll(() => const CurrencyUpdateScreen());
       }
       Get.to(() => const OtpVerifyScreen());
     } catch (_) {
@@ -382,7 +395,7 @@ class AuthController extends GetxController {
       if (authUser == null) {
         loading = false;
         update();
-        return Get.to(() => const WelcomeScreen());
+        return Get.offAll(() => const WelcomeScreen());
       }
       var request = HttpRequestDto(
         "/api/authentication/logout",
@@ -395,12 +408,13 @@ class AuthController extends GetxController {
       await repository.removeFromLocalStorage(Keys.User);
       loading = false;
       update();
-      Get.to(() => const WelcomeScreen());
+
+      Get.offAll(() => const WelcomeScreen());
     } catch (_) {
       loading = false;
       update();
       await repository.removeFromLocalStorage(Keys.User);
-      Get.to(() => const WelcomeScreen());
+      Get.offAll(() => const WelcomeScreen());
     }
   }
 
@@ -425,9 +439,13 @@ class AuthController extends GetxController {
 
       loading = false;
       update();
+      if (authResponse?.user != null) {
+        EventsService.signInEvent(
+            authResponse!.user!.id!, authResponse!.user!.tokenId!);
+      }
       return authResponse!.user!.currency != null
-          ? Get.to(() => const HomeScreen())
-          : Get.to(() => const CurrencyUpdateScreen());
+          ? Get.offAll(() => const HomeScreen())
+          : Get.offAll(() => const CurrencyUpdateScreen());
     } catch (_) {
       loading = false;
       Get.dialog(const ResponseModal(

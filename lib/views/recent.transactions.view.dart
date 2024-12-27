@@ -62,6 +62,7 @@ class RecentTransactionsView extends StatelessWidget {
             )
           else
             ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 itemCount: transactions.length,

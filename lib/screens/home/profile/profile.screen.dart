@@ -186,10 +186,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       //     title: "Settings",
                                       //     iconPath: Resources.settings,
                                       //     color: AppColors.primaryColor),
-                                      const ProfileMenuItemCard(
-                                          title: "Export Data",
-                                          iconPath: Resources.upload,
-                                          color: AppColors.primaryColor),
+                                      // const ProfileMenuItemCard(
+                                      //     title: "Export Data",
+                                      //     iconPath: Resources.upload,
+                                      //     color: AppColors.primaryColor),
                                       ProfileMenuItemCard(
                                         title: "Logout",
                                         iconPath: Resources.logout,

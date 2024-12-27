@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/auth.controller.dart';
 import 'package:ie_montrac/api/controllers/budget.controller.dart';
 import 'package:ie_montrac/api/controllers/reports.controller.dart';
+import 'package:ie_montrac/api/services/events.service.dart';
 
 import 'app.store.dart';
 import 'controllers/category.controller.dart';
@@ -15,6 +16,8 @@ Future<void> init() async {
   // load http client
   Get.lazyPut(() => HttpClient());
   Get.lazyPut(() => AppStore());
+
+  Get.lazyPut(() => EventsService());
 
   // load repositories
   Get.lazyPut(() => Repository(

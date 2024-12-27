@@ -15,6 +15,7 @@ class User {
   final bool authenticated;
   final bool resetPassword;
   final DateTime? otpExpiryTime;
+  final String? tokenId;
   String? currency;
   String? currencyName;
 
@@ -36,7 +37,8 @@ class User {
       this.resetPassword = false,
       this.otpExpiryTime,
       this.currency,
-      this.currencyName});
+      this.currencyName,
+      this.tokenId});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -63,7 +65,8 @@ class User {
             ? DateTime.parse(json["otpExpiryTime"])
             : null,
         currency: json["currency"] as String?,
-        currencyName: json["currencyName"] as String?);
+        currencyName: json["currencyName"] as String?,
+        tokenId: json["tokenId"] as String?);
   }
 
   Map<String, dynamic> toJson() {
@@ -85,7 +88,8 @@ class User {
       "resetPassword": resetPassword,
       "otpExpiryTime": otpExpiryTime?.toIso8601String(),
       "currency": currency,
-      "currencyName": currencyName
+      "currencyName": currencyName,
+      "tokenId": tokenId
     };
   }
 }
