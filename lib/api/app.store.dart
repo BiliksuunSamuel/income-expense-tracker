@@ -2,24 +2,25 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStore extends GetxService {
+  //let's register share preference
+  final SharedPreferences _prefs;
+
+  AppStore({required SharedPreferences prefs}) : _prefs = prefs;
+
   Future<void> saveData(String key, String data) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, data);
+    await _prefs.setString(key, data);
   }
 
   Future<dynamic> getData(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    var data = await prefs.getString(key);
+    var data = await _prefs.getString(key);
     return data;
   }
 
   Future<void> removeData(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(key);
+    await _prefs.remove(key);
   }
 
   Future<void> clearData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await _prefs.clear();
   }
 }
