@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -446,7 +447,10 @@ class AuthController extends GetxController {
       return authResponse!.user!.currency != null
           ? Get.offAll(() => const HomeScreen())
           : Get.offAll(() => const CurrencyUpdateScreen());
-    } catch (_) {
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
       loading = false;
       Get.dialog(const ResponseModal(
         message: "Sorry,an error occurred",

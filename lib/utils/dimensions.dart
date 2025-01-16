@@ -9,6 +9,12 @@ class Dimensions {
   static void init(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
     deviceHeight = MediaQuery.of(context).size.height;
+    if (deviceWidth < 1) {
+      deviceWidth = referenceWidth;
+    }
+    if (deviceHeight < 1) {
+      deviceHeight = referenceHeight;
+    }
   }
 
   /// Scale by height based on the reference height

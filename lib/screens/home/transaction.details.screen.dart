@@ -187,18 +187,19 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          _buildInfoColumn(
-                                              'Type',
-                                              controller.transaction!.type
-                                                  .toTitleCase()),
-                                          _buildInfoColumn(
-                                              'Category',
-                                              controller.transaction!.category
-                                                  .toTitleCase()),
-                                          _buildInfoColumn(
-                                              'Wallet',
-                                              controller.transaction!.account
-                                                  .toTitleCase()),
+                                          Expanded(
+                                              flex: 4,
+                                              child: _buildInfoColumn(
+                                                  'Type',
+                                                  controller.transaction!.type
+                                                      .toTitleCase())),
+                                          Expanded(
+                                              flex: 4,
+                                              child: _buildInfoColumn(
+                                                  'Category',
+                                                  controller
+                                                      .transaction!.category
+                                                      .toTitleCase())),
                                         ],
                                       ),
                                     ),
@@ -307,12 +308,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          value.isNotEmpty ? value : "",
+          style: TextStyle(
+            fontSize: Dimensions.getFontSize(14),
+            fontWeight: FontWeight.normal,
           ),
-        ),
+          softWrap: true,
+          maxLines: null, // Allows unlimited lines
+        )
       ],
     );
   }
