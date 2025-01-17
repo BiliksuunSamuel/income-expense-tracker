@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -448,14 +447,11 @@ class AuthController extends GetxController {
           ? Get.offAll(() => const HomeScreen())
           : Get.offAll(() => const CurrencyUpdateScreen());
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
       loading = false;
+      update();
       Get.dialog(const ResponseModal(
         message: "Sorry,an error occurred",
       ));
-      update();
     }
   }
 

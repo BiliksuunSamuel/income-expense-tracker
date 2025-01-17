@@ -41,10 +41,6 @@ class User {
       this.tokenId});
 
   factory User.fromJson(Map<String, dynamic> json) {
-    var auth = json["authenticated"];
-    if (auth == null) {
-      auth = false;
-    }
     return User(
         id: json['id'] as String?,
         createdAt: json['createdAt'] != null
@@ -63,7 +59,7 @@ class User {
         picture: json['picture'] as String?,
         status: json['status'] as String?,
         isGoogleAuth: json['isGoogleAuth'] as bool?,
-        authenticated: auth,
+        authenticated: json["authenticated"] as bool,
         resetPassword: json["resetPassword"],
         otpExpiryTime: json["otpExpiryTime"] != null
             ? DateTime.parse(json["otpExpiryTime"])
