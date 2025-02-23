@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
 import 'package:ie_montrac/components/response.modal.dart';
+import 'package:ie_montrac/enums/dialog.variants.dart';
 import 'package:ie_montrac/models/auth.response.dart';
 import 'package:ie_montrac/models/category.dart';
 import 'package:ie_montrac/models/grouped.transaction.dart';
@@ -36,6 +37,7 @@ class TransactionController extends GetxController {
   var startDateController = TextEditingController();
   var endDateController = TextEditingController();
   List<Category> categories = [];
+  bool transactionDeleted = false;
 
   //set selected Category
   void setSelectedCategory(Category? category) {
@@ -64,6 +66,36 @@ class TransactionController extends GetxController {
 
   Future<void> applyFilter() async {
     await getAllTransactions(pageIndex: 0);
+  }
+
+  //delete Transaction
+  Future<void> deleteTransaction(String id) async {
+    try {
+      loading = true;
+      update();
+      await getAuthUser();
+      var request =
+          HttpRequestDto("/api/transactions/$id", token: authResponse?.token);
+      var res = await repository.deleteAsync(request);
+      if (!res.isSuccessful) {
+        loading = false;
+        update();
+        return Get.dialog(ResponseModal(message: res.message));
+      }
+      loading = false;
+      transactionDeleted = true;
+      update();
+      Get.dialog(ResponseModal(
+        message: res.message ?? "Transaction Removed",
+        variant: DialogVariant.Success,
+      ));
+    } catch (_) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(
+        message: "Sorry,an error occurred",
+      ));
+    }
   }
 
   //get categories
@@ -262,6 +294,7 @@ class TransactionController extends GetxController {
         return;
       }
 
+      transactionDeleted = false;
       transaction = Transaction.fromJson(res.data);
       loading = false;
       update();

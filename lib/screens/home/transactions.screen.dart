@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ie_montrac/api/controllers/category.controller.dart';
 import 'package:ie_montrac/api/controllers/transaction.controller.dart';
 import 'package:ie_montrac/api/services/events.service.dart';
 import 'package:ie_montrac/bottom-sheet/transactions.filter.bottom.sheet.dart';
@@ -35,12 +34,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   void _loadData() async {
     var controller = Get.find<TransactionController>();
-    await Future.wait([controller.getGroupedTransactions()]);
-  }
-
-  void _loadCategories() async {
-    var controller = Get.find<CategoryController>();
-    await Future.wait([controller.getCategories()]);
+    await controller.getGroupedTransactions(
+        type: controller.transactionType.value == "All"
+            ? null
+            : controller.transactionType.value);
   }
 
   @override

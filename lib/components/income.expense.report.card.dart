@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ie_montrac/models/income.expense.report.dart';
-import 'package:ie_montrac/theme/app.colors.dart';
 import 'package:ie_montrac/utils/utilities.dart';
 
+import '../theme/app.colors.dart';
 import '../theme/app.font.size.dart';
 import '../utils/dimensions.dart';
 
@@ -58,13 +58,6 @@ class IncomeExpenseReportCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                '$currency ${report.value.abs().toStringAsFixed(2)}',
-                style: AppFontSize.fontSizeMedium(
-                  color: isIncome ? AppColors.greenColor : AppColors.redColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
             ],
           ),
           SizedBox(height: Dimensions.getHeight(10)),
@@ -80,6 +73,25 @@ class IncomeExpenseReportCard extends StatelessWidget {
                     mapCategoryToColor(report.label)),
               ),
             ),
+          ),
+          SizedBox(
+            height: Dimensions.getHeight(10),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                '$currency ${report.value.abs().toStringAsFixed(2)}',
+                style: AppFontSize.fontSizeMedium(
+                  color: isIncome ? AppColors.greenColor : AppColors.redColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: Dimensions.getHeight(20),
           ),
         ],
       ),

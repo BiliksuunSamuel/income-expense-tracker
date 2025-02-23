@@ -10,7 +10,10 @@ import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/utils/utilities.dart';
 import 'package:ie_montrac/views/app.view.dart';
 
+import '../../bottom-sheet/action.confirmation.bottom.sheet.dart';
 import '../../components/primary.button.dart';
+import '../../components/svg.icon.dart';
+import '../../helper/resources.dart';
 
 class TransactionDetailsScreen extends StatefulWidget {
   const TransactionDetailsScreen({Key? key}) : super(key: key);
@@ -91,31 +94,35 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                             fontSize: 20,
                                             fontWeight: FontWeight.w900),
                                       ),
-                                      const SizedBox()
-                                      // InkWell(
-                                      //   onTap: () {
-                                      //     showModalBottomSheet(
-                                      //         context: context,
-                                      //         builder: (BuildContext ctx) {
-                                      //           return ActionConfirmationBottomSheet(
-                                      //             title:
-                                      //                 "Remove this transaction?",
-                                      //             message:
-                                      //                 "Are you sure you want to remove this transaction",
-                                      //             onApprove: () {
-                                      //               Get.dialog(
-                                      //                   const ResponseModal(
-                                      //                 message:
-                                      //                     "Transaction removed successfully",
-                                      //               ));
-                                      //             },
-                                      //           );
-                                      //         });
-                                      //   },
-                                      //   child: const SvgIcon(
-                                      //     path: Resources.trashIcon,
-                                      //   ),
-                                      // )
+                                      const SizedBox(),
+                                      InkWell(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext ctx) {
+                                                return ActionConfirmationBottomSheet(
+                                                  title:
+                                                      "Remove this transaction?",
+                                                  message:
+                                                      "Are you sure you want to remove this transaction",
+                                                  onDecline: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  onApprove: () async {
+                                                    Navigator.pop(context);
+                                                    await controller
+                                                        .deleteTransaction(
+                                                            controller
+                                                                .transaction!
+                                                                .id);
+                                                  },
+                                                );
+                                              });
+                                        },
+                                        child: const SvgIcon(
+                                          path: Resources.trashIcon,
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -257,27 +264,28 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                       ),
                                     SizedBox(height: Dimensions.getHeight(20)),
                                     // Edit button
-                                    PrimaryButton(
-                                      title: "Edit",
-                                      onPressed: () {
-                                        if ("Income".equals(
-                                            controller.transaction!.type)) {
-                                          Get.to(() => EditIncomeScreen(),
-                                              arguments: {
-                                                "transactionId":
-                                                    controller.transaction!.id,
-                                                "transactionType": "Income"
-                                              });
-                                        } else {
-                                          Get.to(() => EditExpenseScreen(),
-                                              arguments: {
-                                                "transactionId":
-                                                    controller.transaction!.id,
-                                                "transactionType": "Expense"
-                                              });
-                                        }
-                                      },
-                                    )
+                                    if (!controller.transactionDeleted)
+                                      PrimaryButton(
+                                        title: "Edit",
+                                        onPressed: () {
+                                          if ("Income".equals(
+                                              controller.transaction!.type)) {
+                                            Get.to(() => EditIncomeScreen(),
+                                                arguments: {
+                                                  "transactionId": controller
+                                                      .transaction!.id,
+                                                  "transactionType": "Income"
+                                                });
+                                          } else {
+                                            Get.to(() => EditExpenseScreen(),
+                                                arguments: {
+                                                  "transactionId": controller
+                                                      .transaction!.id,
+                                                  "transactionType": "Expense"
+                                                });
+                                          }
+                                        },
+                                      )
                                   ],
                                 ),
                               ),

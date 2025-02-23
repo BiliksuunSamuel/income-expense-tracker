@@ -10,7 +10,6 @@ class ProgressBar extends StatelessWidget {
   final double? height;
   final double? borderRadius;
   final ValueChanged<double>? onChange; // Callback for progress changes
-
   const ProgressBar({
     Key? key,
     required this.progress,

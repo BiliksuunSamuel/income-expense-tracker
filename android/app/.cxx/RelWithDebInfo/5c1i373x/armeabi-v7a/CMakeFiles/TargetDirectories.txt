@@ -1,0 +1,2 @@
+/Users/bhills/Desktop/MobileApps/ie_montrac/android/app/.cxx/RelWithDebInfo/5c1i373x/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/bhills/Desktop/MobileApps/ie_montrac/android/app/.cxx/RelWithDebInfo/5c1i373x/armeabi-v7a/CMakeFiles/rebuild_cache.dir
