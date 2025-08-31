@@ -2,10 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/services/events.service.dart';
 import 'package:ie_montrac/routes/app.routes.dart';
-import 'package:ie_montrac/screens/landing/welcome.screen.dart';
 import 'package:ie_montrac/theme/app.theme.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:socket_io_client/socket_io_client.dart' as SocketIo;
@@ -47,8 +47,14 @@ void main() async {
   }
   await dependencies.init();
 
+  //Set preferred orientations to portrait
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(const MyApp());
+  });
   //
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -59,11 +65,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Dimensions.init(context);
     return GetMaterialApp(
-        title: "IE Montrac",
+        title: "Income-Expense Tracker",
         debugShowCheckedModeBanner: false,
         theme: appTheme,
-        initialRoute: AppRoutes.home,
-        getPages: AppRoutes.routes,
-        home: const WelcomeScreen());
+        initialRoute: AppRoutes.welcomeScreen,
+        getPages: AppRoutes.routes);
   }
 }

@@ -41,4 +41,5 @@ class Resources {
   static const String closed = "assets/images/closed.svg";
   static const String openedImg = "assets/images/opened.png";
   static const String closedImg = "assets/images/close.png";
+  static const String invoice = "assets/images/invoice.svg";
 }

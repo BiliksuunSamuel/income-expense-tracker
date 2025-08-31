@@ -7,7 +7,7 @@ import 'package:ie_montrac/components/datetime.separator.dart';
 import 'package:ie_montrac/components/empty.state.view.dart';
 import 'package:ie_montrac/components/loader.dart';
 import 'package:ie_montrac/components/transaction.item.card.dart';
-import 'package:ie_montrac/screens/home/transaction.details.screen.dart';
+import 'package:ie_montrac/routes/app.routes.dart';
 import 'package:ie_montrac/utils/dimensions.dart';
 import 'package:ie_montrac/views/app.view.dart';
 import 'package:ie_montrac/views/content.container.dart';
@@ -78,48 +78,54 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                           automaticallyImplyLeading: false,
                           title: AppHeaderTitle(
                             title: "Transaction History",
-                            rightComponent: IconButton(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                      context: context,
-                                      builder: (BuildContext btx) {
-                                        return Obx(() =>
-                                            TransactionHistoryFilterBottomSheet(
-                                              onCategoryChanged:
-                                                  (Category? cate) {
-                                                controller
-                                                    .setSelectedCategory(cate);
-                                              },
-                                              startDateController: controller
-                                                  .startDateController,
-                                              endDateController:
-                                                  controller.endDateController,
-                                              selectedCategory:
-                                                  controller.selectedCategory,
-                                              categories: controller.categories,
-                                              transactionType: controller
-                                                  .transactionType.value,
-                                              onTransactionTypeChanged:
-                                                  (String val) {
-                                                controller
-                                                    .setSelectedTransactionType(
-                                                        val);
-                                              },
-                                              resetFilter: () {
-                                                Navigator.pop(btx);
-                                                controller.resetFilter();
-                                              },
-                                              onApply: () async {
-                                                Navigator.pop(btx);
-                                                await controller.applyFilter();
-                                              },
-                                            ));
-                                      });
-                                },
-                                icon: Icon(
-                                  Icons.filter_list_outlined,
-                                  size: Dimensions.getIconSize(24),
-                                )),
+                            rightComponent: controller.totalCount > 10
+                                ? IconButton(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext btx) {
+                                            return Obx(() =>
+                                                TransactionHistoryFilterBottomSheet(
+                                                  onCategoryChanged:
+                                                      (Category? cate) {
+                                                    controller
+                                                        .setSelectedCategory(
+                                                            cate);
+                                                  },
+                                                  startDateController:
+                                                      controller
+                                                          .startDateController,
+                                                  endDateController: controller
+                                                      .endDateController,
+                                                  selectedCategory: controller
+                                                      .selectedCategory,
+                                                  categories:
+                                                      controller.categories,
+                                                  transactionType: controller
+                                                      .transactionType.value,
+                                                  onTransactionTypeChanged:
+                                                      (String val) {
+                                                    controller
+                                                        .setSelectedTransactionType(
+                                                            val);
+                                                  },
+                                                  resetFilter: () {
+                                                    Navigator.pop(btx);
+                                                    controller.resetFilter();
+                                                  },
+                                                  onApply: () async {
+                                                    Navigator.pop(btx);
+                                                    await controller
+                                                        .applyFilter();
+                                                  },
+                                                ));
+                                          });
+                                    },
+                                    icon: Icon(
+                                      Icons.filter_list_outlined,
+                                      size: Dimensions.getIconSize(24),
+                                    ))
+                                : null,
                           ),
                         ),
                         SliverFillRemaining(
@@ -134,6 +140,8 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                       itemBuilder: (BuildContext ctx, index) {
                                         var item =
                                             controller.allTransactions[index];
+                                        //get all transactions in the controller.allTransactions where the createdAt.date is == item.createdAt.date;
+
                                         return Column(
                                           children: [
                                             //if two adjacent transactions have the same date, don't show the date
@@ -145,13 +153,14 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                                         .createdAt
                                                         .day)
                                               DateTimeSeparator(
-                                                  datetime: item.createdAt),
+                                                datetime: item.createdAt,
+                                              ),
                                             TransactionItemCard(
                                               transaction: item,
                                               onPress: () {
-                                                Get.to(
-                                                    () =>
-                                                        const TransactionDetailsScreen(),
+                                                Get.toNamed(
+                                                    AppRoutes
+                                                        .transactionDetailsScreen,
                                                     arguments: {
                                                       "transactionId": item.id,
                                                       "transactionType":

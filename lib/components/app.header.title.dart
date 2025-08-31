@@ -45,7 +45,7 @@ class AppHeaderTitle extends StatelessWidget {
           SizedBox(width: Dimensions.getWidth(10)),
           Expanded(
             child: Text(title ?? "Title Here",
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
                 style: AppFontSize.fontSizeTitle(
                   color: titleColor ?? Colors.black,
                   fontWeight: FontWeight.bold,

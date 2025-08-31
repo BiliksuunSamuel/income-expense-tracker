@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/controllers/auth.controller.dart';
+import 'package:ie_montrac/api/controllers/billing.plan.controller.dart';
 import 'package:ie_montrac/api/controllers/budget.controller.dart';
+import 'package:ie_montrac/api/controllers/invoice.controller.dart';
 import 'package:ie_montrac/api/controllers/reports.controller.dart';
 import 'package:ie_montrac/api/services/events.service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +11,7 @@ import 'app.store.dart';
 import 'controllers/category.controller.dart';
 import 'controllers/expense.controller.dart';
 import 'controllers/income.controller.dart';
+import 'controllers/subscription.controller.dart';
 import 'controllers/transaction.controller.dart';
 import 'http.client.dart';
 import 'repositories/repository.dart';
@@ -37,4 +40,7 @@ Future<void> init() async {
   Get.put(() => BudgetController(repository: Get.find<Repository>()),
       permanent: true);
   Get.lazyPut(() => ReportsController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => BillingPlanController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => SubscriptionController(repository: Get.find<Repository>()));
+  Get.lazyPut(() => InvoiceController(repository: Get.find<Repository>()));
 }

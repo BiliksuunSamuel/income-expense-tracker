@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ie_montrac/components/transaction.summary.card.dart';
+import 'package:ie_montrac/helper/resources.dart';
 import 'package:ie_montrac/models/transaction.summary.dart';
 
 import '../theme/app.colors.dart';
@@ -22,7 +23,7 @@ class IncomeExpenseSummaryView extends StatelessWidget {
                 color: AppColors.greenColor,
                 title: "Income",
                 amount: "${currency} ${summary.income}",
-                iconPath: "assets/images/income.svg"),
+                iconPath: Resources.income),
           ),
           SizedBox(
             width: Dimensions.getWidth(15),
@@ -32,7 +33,7 @@ class IncomeExpenseSummaryView extends StatelessWidget {
                   color: AppColors.redColor,
                   title: "Expense",
                   amount: "GHS ${summary.expense}",
-                  iconPath: "assets/images/expense.svg")),
+                  iconPath: Resources.expense)),
         ],
       ),
     );

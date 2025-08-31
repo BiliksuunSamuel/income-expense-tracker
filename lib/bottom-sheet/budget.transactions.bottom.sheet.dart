@@ -37,6 +37,7 @@ class BudgetTransactionsBottomSheet extends StatelessWidget {
                     ),
                   )
                 : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       var transaction = transactions[index];
@@ -53,6 +54,9 @@ class BudgetTransactionsBottomSheet extends StatelessWidget {
                       );
                     },
                   ),
+          ),
+          SizedBox(
+            height: Dimensions.getHeight(20),
           ),
         ]);
   }

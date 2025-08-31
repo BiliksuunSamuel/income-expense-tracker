@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:ie_montrac/constants/payment.status.dart';
 import 'package:ie_montrac/helper/resources.dart';
 import 'package:ie_montrac/theme/app.colors.dart';
+import 'package:intl/intl.dart';
 
 Future<String> convertToBase64(String path) async {
   File imageFile = File(path);
@@ -19,7 +21,7 @@ String formatTime(DateTime date) {
 
 //format date: yyyy-mm-dd
 String formatDate(DateTime date) {
-  return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  return DateFormat('MMM d, y').format(date);
 }
 
 //map transaction category to svg icon path
@@ -140,6 +142,13 @@ String longDateTimeString(DateTime date) {
   return value;
 }
 
+String longDateString(DateTime date) {
+  var day = convertToNth(date.day);
+  var month = convertMonth(date.month);
+  var value = "$day $month ${date.year}";
+  return value;
+}
+
 //convert string to title case,
 //make it an extension method for strings
 extension TitleCase on String {
@@ -186,5 +195,18 @@ extension NullableStringEquality on String {
       return false;
     }
     return this == other;
+  }
+}
+
+Color getPaymentStatusColor(String status) {
+  switch (status) {
+    case PaymentStatus.completed:
+      return AppColors.greenColor;
+    case PaymentStatus.pending:
+      return AppColors.orangeColor;
+    case PaymentStatus.failed:
+      return AppColors.redColor;
+    default:
+      return Colors.grey.shade100;
   }
 }

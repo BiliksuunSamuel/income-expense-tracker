@@ -15,7 +15,8 @@ class TransactionItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var icon = mapCategoryToIcon(transaction.category);
-    var color = mapCategoryToColor(transaction.category).withOpacity(0.25);
+    var color =
+        mapCategoryToColor(transaction.category).withValues(alpha: 0.25);
     var iconColor = mapCategoryToColor(transaction.category);
     var title = transaction.category.toTitleCase();
     var subtitle = transaction.description;
@@ -25,7 +26,7 @@ class TransactionItemCard extends StatelessWidget {
     return InkWell(
       onTap: onPress,
       child: Container(
-        margin: EdgeInsets.only(bottom: Dimensions.getPadding(15)),
+        margin: EdgeInsets.only(bottom: Dimensions.getPadding(20)),
         child: Row(
           children: [
             Container(

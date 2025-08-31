@@ -21,7 +21,7 @@ class TransactionCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: Dimensions.getHeight(5)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.getBorderRadius(5)),
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -32,7 +32,7 @@ class TransactionCard extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius:
                     BorderRadius.circular(Dimensions.getBorderRadius(15)),
-                color: color.withOpacity(0.18)),
+                color: color.withValues(alpha: 0.18)),
             child: SvgIcon(
               path: iconPath,
               color: color,
@@ -55,7 +55,7 @@ class TransactionCard extends StatelessWidget {
                 item.description,
                 style: AppFontSize.fontSizeMedium(
                     fontSize: Dimensions.getFontSize(14),
-                    color: Colors.black.withOpacity(0.5)),
+                    color: Colors.black.withValues(alpha: 0.5)),
               )
             ],
           ),

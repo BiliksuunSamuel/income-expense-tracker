@@ -12,7 +12,8 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: backgroundColor ?? Colors.white70.withOpacity(0.95),
+      backgroundColor:
+          backgroundColor ?? Colors.white70.withValues(alpha: 0.95),
       body: body,
       drawer: drawer,
       appBar: appBar,

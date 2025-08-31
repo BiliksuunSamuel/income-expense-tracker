@@ -20,19 +20,19 @@ class ProfileMenuItemCard extends StatelessWidget {
     return InkWell(
       onTap: onPress,
       child: Container(
-        margin: EdgeInsets.only(bottom: Dimensions.getHeight(20)),
+        margin: EdgeInsets.only(bottom: Dimensions.getHeight(12)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: Dimensions.getWidth(50),
-              height: Dimensions.getHeight(50),
-              padding: EdgeInsets.all(Dimensions.getPadding(10)),
+              width: Dimensions.getWidth(40),
+              height: Dimensions.getHeight(40),
+              padding: EdgeInsets.all(Dimensions.getPadding(8)),
               decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(Dimensions.getBorderRadius(15)),
-                  color: color.withOpacity(0.15)),
+                  color: color.withValues(alpha: 0.15)),
               child: SvgIcon(
                 path: iconPath,
                 color: color,

@@ -26,16 +26,25 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
           onPressed: disabled! ? null : onPressed ?? () {},
           style: ElevatedButton.styleFrom(
-              elevation: 0,
-              padding: EdgeInsets.symmetric(
-                  horizontal: Dimensions.getPadding(16),
-                  vertical: Dimensions.getPadding(15)),
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(Dimensions.getBorderRadius(15))),
-              backgroundColor: disabled!
-                  ? Colors.grey.withOpacity(0.28)
-                  : bgcolor ?? AppColors.primaryColor),
+            elevation: 0,
+            padding: EdgeInsets.symmetric(
+                horizontal: Dimensions.getPadding(16),
+                vertical: Dimensions.getPadding(15)),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(Dimensions.getBorderRadius(15)),
+            ),
+            backgroundColor: disabled!
+                ? Colors.grey.withValues(alpha: 0.28)
+                : bgcolor ?? AppColors.primaryColor,
+            //give button order
+            side: BorderSide(
+              color: disabled!
+                  ? Colors.grey.withValues(alpha: 0.28)
+                  : bgcolor ?? AppColors.primaryColor,
+              width: Dimensions.getWidth(1),
+            ),
+          ),
           child: Text(
             title,
             style: TextStyle(

@@ -9,11 +9,7 @@ import 'package:ie_montrac/dtos/email.signin.request.dart';
 import 'package:ie_montrac/dtos/email.signup.request.dart';
 import 'package:ie_montrac/dtos/http.request.dto.dart';
 import 'package:ie_montrac/models/currency.dart';
-import 'package:ie_montrac/screens/auth/otp.verify.screen.dart';
-import 'package:ie_montrac/screens/auth/reset.password.screen.dart';
-import 'package:ie_montrac/screens/home/home.screen.dart';
-import 'package:ie_montrac/screens/home/profile/currency.update.screen.dart';
-import 'package:ie_montrac/screens/landing/welcome.screen.dart';
+import 'package:ie_montrac/routes/app.routes.dart';
 
 import '../../models/auth.response.dart';
 import '../repositories/repository.dart';
@@ -108,7 +104,8 @@ class AuthController extends GetxController {
         update();
         if (res.code == 401) {
           await repository.removeFromLocalStorage(Keys.User);
-          return Get.offAll(() => const WelcomeScreen());
+          return Get.offAllNamed(AppRoutes.welcomeScreen);
+          ;
         }
         return Get.dialog(ResponseModal(
           message: res.message,
@@ -119,7 +116,8 @@ class AuthController extends GetxController {
       await repository.saveAuthUser(authInfo);
       loading = false;
       update();
-      Get.offAll(() => const HomeScreen());
+      Get.offAllNamed(AppRoutes.home);
+      ;
     } catch (_) {
       loading = false;
       update();
@@ -154,7 +152,8 @@ class AuthController extends GetxController {
       var authInfo = AuthResponse.fromJson(res.data);
       await repository.saveAuthUser(authInfo);
       update();
-      Get.offAll(() => const HomeScreen());
+      Get.offAllNamed(AppRoutes.home);
+      ;
     } catch (_) {
       loading = false;
       update();
@@ -185,7 +184,7 @@ class AuthController extends GetxController {
       loading = false;
       emailController.clear();
       update();
-      Get.offAll(() => const OtpVerifyScreen());
+      Get.offAllNamed(AppRoutes.otpVerifyScreen);
     } catch (_) {
       loading = false;
       update();
@@ -223,7 +222,7 @@ class AuthController extends GetxController {
 
       update();
       if (authInfo.user!.resetPassword) {
-        return Get.offAll(() => const ResetPasswordScreen());
+        return Get.offAllNamed(AppRoutes.resetPasswordScreen);
       }
 
       if (authResponse?.user != null) {
@@ -231,8 +230,8 @@ class AuthController extends GetxController {
             authResponse!.user!.id!, authResponse!.user!.tokenId!);
       }
       return authResponse!.user!.currency != null
-          ? Get.offAll(() => const HomeScreen())
-          : Get.offAll(() => const CurrencyUpdateScreen());
+          ? Get.offAllNamed(AppRoutes.home)
+          : Get.offAllNamed(AppRoutes.currencyUpdateScreen);
     } catch (_) {
       loading = false;
       update();
@@ -320,15 +319,17 @@ class AuthController extends GetxController {
               authResponse!.user!.id!, authResponse!.user!.tokenId!);
         }
         return authResponse!.user!.currency != null
-            ? Get.offAll(() => const HomeScreen())
-            : Get.offAll(() => const CurrencyUpdateScreen());
+            ? Get.offAllNamed(AppRoutes.home)
+            : Get.offAllNamed(AppRoutes.currencyUpdateScreen);
+        ;
       }
       final expiryTime = authResponse!.user!.otpExpiryTime!;
       final currentTime = DateTime.now();
       final difference = expiryTime.difference(currentTime).inSeconds;
       otpValidity.value = difference > 0 ? difference : 0;
       update();
-      Get.offAll(() => const OtpVerifyScreen());
+      Get.offAllNamed(AppRoutes.otpVerifyScreen);
+      ;
     } catch (_) {
       loading = false;
       update();
@@ -373,10 +374,12 @@ class AuthController extends GetxController {
               authResponse!.user!.id!, authResponse!.user!.tokenId!);
         }
         return authResponse!.user!.currency != null
-            ? Get.offAll(() => const HomeScreen())
-            : Get.offAll(() => const CurrencyUpdateScreen());
+            ? Get.offAllNamed(AppRoutes.home)
+            : Get.offAllNamed(AppRoutes.currencyUpdateScreen);
+        ;
       }
-      Get.to(() => const OtpVerifyScreen());
+      Get.toNamed(AppRoutes.otpVerifyScreen);
+      ;
     } catch (_) {
       loading = false;
       update();
@@ -395,7 +398,7 @@ class AuthController extends GetxController {
       if (authUser == null) {
         loading = false;
         update();
-        return Get.offAll(() => const WelcomeScreen());
+        return Get.offAllNamed(AppRoutes.welcomeScreen);
       }
       var request = HttpRequestDto(
         "/api/authentication/logout",
@@ -409,12 +412,12 @@ class AuthController extends GetxController {
       loading = false;
       update();
 
-      Get.offAll(() => const WelcomeScreen());
+      Get.offAllNamed(AppRoutes.welcomeScreen);
     } catch (_) {
       loading = false;
       update();
       await repository.removeFromLocalStorage(Keys.User);
-      Get.offAll(() => const WelcomeScreen());
+      Get.offAllNamed(AppRoutes.welcomeScreen);
     }
   }
 
@@ -431,6 +434,7 @@ class AuthController extends GetxController {
       var response = await repository.postAsync(httpRequest);
       if (!response.isSuccessful) {
         loading = false;
+        update();
         return Get.dialog(ResponseModal(message: response.message));
       }
       var authInfo = AuthResponse.fromJson(response.data);
@@ -444,12 +448,12 @@ class AuthController extends GetxController {
             authResponse!.user!.id!, authResponse!.user!.tokenId!);
       }
       return authResponse!.user!.currency != null
-          ? Get.offAll(() => const HomeScreen())
-          : Get.offAll(() => const CurrencyUpdateScreen());
+          ? Get.offAllNamed(AppRoutes.home)
+          : Get.offAllNamed(AppRoutes.currencyUpdateScreen);
     } catch (e) {
       loading = false;
       update();
-      Get.dialog(const ResponseModal(
+      Get.dialog(ResponseModal(
         message: "Sorry,an error occurred",
       ));
     }

@@ -64,34 +64,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                InkWell(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: Dimensions.getPadding(10)),
-                                    height: Dimensions.getHeight(40),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.getBorderRadius(20)),
-                                      border: Border.all(
-                                        width: Dimensions.getWidth(0.25),
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Obx(() => Text(
-                                              controller.transactionType.value,
-                                              style:
-                                                  AppFontSize.fontSizeMedium(),
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                Expanded(
+                                    child: Text(
+                                  "Recent Transactions",
+                                  textAlign: TextAlign.center,
+                                  style: AppFontSize.fontSizeMedium(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: Dimensions.getFontSize(22)),
+                                )),
                                 InkWell(
                                   onTap: () {
                                     showModalBottomSheet(
@@ -124,23 +104,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                                               ));
                                         });
                                   },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: Dimensions.getPadding(10)),
-                                    height: Dimensions.getHeight(40),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          Dimensions.getBorderRadius(8)),
-                                      border: Border.all(
-                                        width: Dimensions.getWidth(0.25),
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.filter_list_outlined,
-                                      size: Dimensions.getIconSize(32),
-                                      color: Colors.black,
-                                    ),
+                                  child: Icon(
+                                    Icons.filter_list_outlined,
+                                    size: Dimensions.getIconSize(32),
+                                    color: Colors.black,
                                   ),
                                 ),
                               ],

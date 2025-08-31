@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ie_montrac/api/repositories/repository.dart';
@@ -9,6 +12,7 @@ import 'package:ie_montrac/models/grouped.transaction.dart';
 import 'package:ie_montrac/models/transaction.chart.data.dart';
 import 'package:ie_montrac/models/transaction.summary.dart';
 import 'package:ie_montrac/utils/utilities.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../dtos/http.request.dto.dart';
 import '../../dtos/paged.results.dto.dart';
@@ -64,8 +68,77 @@ class TransactionController extends GetxController {
     await getAllTransactions(pageIndex: 0);
   }
 
+  void resetSelectedFilters() async {
+    transactionType.value = "All";
+    selectedCategory = null;
+    startDateController.clear();
+    endDateController.clear();
+    update();
+  }
+
   Future<void> applyFilter() async {
     await getAllTransactions(pageIndex: 0);
+  }
+
+  //Handle export transactions
+  Future<void> handleExportTransactions() async {
+    try {
+      loading = true;
+      update();
+
+      await getAuthUser();
+
+      final request = HttpRequestDto(
+        "/api/reports/export",
+        token: authResponse?.token,
+        params: {
+          "page": "1",
+          "pageSize": pageSize.toString(),
+          "startDate": startDateController.text,
+          "endDate": endDateController.text,
+          "category": selectedCategory?.title,
+          "type": transactionType.value.equals("All")
+              ? null
+              : transactionType.value,
+        },
+      );
+
+      final res = await repository.getFileAsync(request);
+      if (res.statusCode != 200) {
+        loading = false;
+        update();
+        return Get.dialog(
+            ResponseModal(message: res.message ?? "Sorry, an error occurred"));
+      }
+
+      var bodyData = res.body;
+      if (bodyData == null) {
+        return Get.dialog(
+            const ResponseModal(message: "Sorry, an error occurred"));
+      }
+
+      var dataMap = bodyData is String ? jsonDecode(bodyData) : bodyData;
+
+      final bytes = base64Decode(dataMap["data"]['content']);
+      final fileName = dataMap["data"]['fileName'];
+
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$fileName');
+      await file.writeAsBytes(bytes, flush: true);
+
+      final exists = await file.exists();
+      debugPrint('Saved to: ${file.path}  (exists: $exists)');
+
+      loading = false;
+      update();
+      Get.dialog(ResponseModal(
+          message: "Your file has been downloaded",
+          variant: DialogVariant.Success));
+    } catch (e) {
+      loading = false;
+      update();
+      Get.dialog(const ResponseModal(message: "Sorry, an error occurred"));
+    }
   }
 
   //delete Transaction

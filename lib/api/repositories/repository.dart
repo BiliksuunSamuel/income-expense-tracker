@@ -40,6 +40,7 @@ class Repository extends GetxService {
     Map<String, dynamic> jsonData = {
       "user": authResponse.user!.toJson(),
       "token": authResponse.token,
+      "subscription": authResponse.subscription?.toJson()
     };
     String data = jsonEncode(jsonData);
     await appStore.saveData(Keys.User, data);
@@ -78,5 +79,10 @@ class Repository extends GetxService {
     var apiResponse = ApiResponse.fromJson(response.body);
     apiResponse.code = response.statusCode;
     return apiResponse;
+  }
+
+  Future<dynamic> getFileAsync(HttpRequestDto request) async {
+    var response = await httpClient.getRequest(request);
+    return response;
   }
 }

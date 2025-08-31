@@ -12,7 +12,36 @@
           "package_name": "com.example.ie_montrac"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "123240012898-4dh4rhoav8ugg9bk8abb3krgljeogh5o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ie_montrac",
+            "certificate_hash": "c5a105718e1d636a36160be5e0886ee24620952b"
+          }
+        },
+        {
+          "client_id": "123240012898-bikks7bmq47tt8187imc2f8fec6l19on.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ie_montrac",
+            "certificate_hash": "573fcc6bb21874f9c18919fb420e81a349205775"
+          }
+        },
+        {
+          "client_id": "123240012898-pd9d17iutuedj6al4ndrngi7mhgcce2f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ie_montrac",
+            "certificate_hash": "57bb3ff59c68097d662355266c056ec9e50d305f"
+          }
+        },
+        {
+          "client_id": "123240012898-1llm0c961ma1s5jnsnjv4uu1rk8f33vk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZn7oIuAgGg0Ynz4eH43O5d06DooGqJcw"
@@ -20,7 +49,63 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123240012898-1llm0c961ma1s5jnsnjv4uu1rk8f33vk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "123240012898-m6il1ppkqm6922a5ktd4al9nd97m5ki1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ieMontrac"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123240012898:android:e39b117fe53e0cb5e8053b",
+        "android_client_info": {
+          "package_name": "com.incomeexpensetracker.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "123240012898-godgvdsatflapjvk3t9cra7tbdcvdkd1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.incomeexpensetracker.app",
+            "certificate_hash": "c5a105718e1d636a36160be5e0886ee24620952b"
+          }
+        },
+        {
+          "client_id": "123240012898-1llm0c961ma1s5jnsnjv4uu1rk8f33vk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZn7oIuAgGg0Ynz4eH43O5d06DooGqJcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123240012898-1llm0c961ma1s5jnsnjv4uu1rk8f33vk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "123240012898-m6il1ppkqm6922a5ktd4al9nd97m5ki1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ieMontrac"
+              }
+            }
+          ]
         }
       }
     }

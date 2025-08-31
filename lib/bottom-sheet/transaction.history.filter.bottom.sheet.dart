@@ -55,7 +55,7 @@ class TransactionHistoryFilterBottomSheet extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(Dimensions.getBorderRadius(20)),
-                  color: AppColors.primaryColor.withOpacity(0.15)),
+                  color: AppColors.primaryColor.withValues(alpha: 0.15)),
               child: Center(
                 child: Text(
                   "Reset",
@@ -103,7 +103,7 @@ class TransactionHistoryFilterBottomSheet extends StatelessWidget {
                   borderRadius:
                       BorderRadius.circular(Dimensions.getBorderRadius(30)),
                   color: item.equals(transactionType)
-                      ? AppColors.primaryColor.withOpacity(0.15)
+                      ? AppColors.primaryColor.withValues(alpha: 0.15)
                       : Colors.transparent,
                   border: Border.all(width: Dimensions.getWidth(0.15))),
               child: Text(

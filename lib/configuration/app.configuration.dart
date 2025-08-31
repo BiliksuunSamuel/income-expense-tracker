@@ -7,7 +7,7 @@ class AppConfiguration {
   static const bool prod = true;
   static const String prodUrl =
       "https://income-expense-tracker-api.onrender.com";
-  static const String localUrl = "http://169.254.219.53:3303";
+  static const String localUrl = "http://localhost:3303";
 
   static String get baseUrl => prod ? prodUrl : localUrl;
 }

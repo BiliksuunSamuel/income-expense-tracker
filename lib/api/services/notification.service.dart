@@ -15,8 +15,18 @@ class NotificationServices {
 
   Future<String?> getDeviceToken() async {
     try {
-      String? token = await messaging.getToken();
-      return token!;
+      if (Platform.isIOS) {
+        String? apnsToken = await messaging.getAPNSToken();
+        if (kDebugMode) {
+          print("APNs Token: $apnsToken");
+        }
+      }
+
+      String? fcmToken = await messaging.getToken();
+      if (kDebugMode) {
+        print("FCM Token: $fcmToken");
+      }
+      return fcmToken;
     } catch (e) {
       if (kDebugMode) {
         print("An error occurred while getting device token: $e");
